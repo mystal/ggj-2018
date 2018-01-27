@@ -6,6 +6,7 @@ use midgar::{KeyCode, Midgar};
 
 trait Animal {
     fn update_pos(&mut self, Vector2<u32>);
+    fn update_dir(&mut self, isize, isize);
     // FIXME: Assuming walls will prevent going negative.
     fn try_move(&mut self, level: &Level, pos: &Vector2<u32>, dx: isize, dy: isize) {
         let new_pos = Vector2::new((pos.x as isize + dx) as u32,
@@ -14,6 +15,7 @@ trait Animal {
         match level.get_tile(new_pos.x, new_pos.y) {
             Tile::Floor => {
                 self.update_pos(new_pos);
+                self.update_dir(dx, dy);
             }
             // New position is empty, don't do anything.
             Tile::Empty => {
@@ -24,12 +26,14 @@ trait Animal {
 
 pub struct Fox {
     pub pos: Vector2<u32>,
+    pub dir: Vector2<isize>,
 }
 
 impl Fox {
     fn new(x: u32, y: u32) -> Self {
         Fox {
             pos: Vector2::new(x, y),
+            dir: Vector2::new(1, 1),
         }
     }
 }
@@ -37,6 +41,42 @@ impl Fox {
 impl Animal for Fox {
     fn update_pos(&mut self, new_pos: Vector2<u32>) {
         self.pos = new_pos;
+    }
+    fn update_dir(&mut self, x: isize, y: isize) {
+        if x != 0 {
+            self.dir.x = x;
+        }
+        if y != 0 {
+            self.dir.y = y;
+        }
+    }
+}
+
+pub struct Pug {
+    pub pos: Vector2<u32>,
+    pub dir: Vector2<isize>,
+}
+
+impl Pug {
+    fn new(x: u32, y: u32) -> Self {
+        Pug {
+            pos: Vector2::new(x, y),
+            dir: Vector2::new(1, 1),
+        }
+    }
+}
+
+impl Animal for Pug {
+    fn update_pos(&mut self, new_pos: Vector2<u32>) {
+        self.pos = new_pos;
+    }
+    fn update_dir(&mut self, x: isize, y: isize) {
+        if x != 0 {
+            self.dir.x = x;
+        }
+        if y != 0 {
+            self.dir.y = y;
+        }
     }
 }
 
