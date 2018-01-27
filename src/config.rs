@@ -8,3 +8,4 @@ pub const GAME_SIZE: Vector2<u32> = Vector2 {
     x: 400,
     y: 300,
 };
+pub const ASSETS_PATH: &str = "assets";

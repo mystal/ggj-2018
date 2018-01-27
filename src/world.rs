@@ -3,6 +3,8 @@ use std::slice::Iter;
 
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::{KeyCode, Midgar};
+use std::fs::File;
+use tiled::{self, PropertyValue};
 
 pub struct Fox {
     pub pos: Vector2<u32>,
@@ -107,17 +109,55 @@ pub struct GameWorld {
     pub game_state: GameState,
     pub fox: Fox,
     pub mailbox: Mailbox,
-    pub level: Level,
+    pub level: tiled::Map,
 }
 
 impl GameWorld {
-    pub fn new() -> Self {
+    pub fn new(map_name: &str, assets_path: &str) -> Self {
+        let level = GameWorld::load_map(map_name, assets_path);
+        let fox = GameWorld::load_fox(&level)
+            .expect(&format!("Could not load \"sneky_fox\" from map {}", map_name));
+        let mailbox = GameWorld::load_mailbox(&level)
+            .expect(&format!("Could not load "));
+
         GameWorld {
             game_state: GameState::Running,
-            fox: Fox::new(0, 3),
-            mailbox: Mailbox::new(0, 0),
-            level: Level::new(),
+            fox: fox,
+            mailbox: mailbox,
+            level: level,
         }
+    }
+
+    fn load_map(map_name: &str, assets_path: &str) -> tiled::Map {
+        let map_path = format!("{}/tiled/maps/{}.tmx", assets_path, map_name);
+        let map_file = File::open(&map_path)
+            .expect(&format!("Could not open map path: {}", map_path));
+        let map = tiled::parse(map_file)
+            .expect(&format!("Could nor parse map file: {}", map_path));
+        map
+    }
+
+    fn load_fox(map: &tiled::Map) -> Option<Fox> {
+        for object in &map.object_groups[0].objects {
+            if object.obj_type == "sneky_fox" {
+                let x = object.x as u32 / map.tile_width;
+                let y = object.y as u32 / map.tile_height;
+                println!("Fox at position ({}, {})", x, y);
+                return Some(Fox::new(x, y));
+            }
+        }
+        None
+    }
+
+    fn load_mailbox(map: &tiled::Map) -> Option<Mailbox> {
+        for object in &map.object_groups[0].objects {
+            if object.obj_type == "sneky_fox" {
+                let x = object.x as u32 / map.tile_width;
+                let y = object.y as u32 / map.tile_height;
+                return Some(Mailbox::new(x, y));
+            }
+        }
+        None
     }
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
@@ -151,12 +191,9 @@ impl GameWorld {
         let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
                                    (self.fox.pos.y as isize + dy) as u32);
 
-        match self.level.get_tile(new_pos.x, new_pos.y) {
-            Tile::Floor => {
-                self.fox.pos = new_pos;
-            }
-            // New position is empty, don't do anything.
-            Tile::Empty => {}
+        let tile =  self.level.layers[0].tiles[new_pos.y as usize][new_pos.x as usize];
+        if tile != 0 {
+            self.fox.pos = new_pos;
         }
     }
 }
