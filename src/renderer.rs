@@ -57,6 +57,10 @@ impl GameRenderer {
                 self.draw_world(dt, world, &mut target);
                 self.draw_ui(dt, world, &mut target);
             }
+            _ => {
+                self.draw_world(dt, world, &mut target);
+                self.draw_ui(dt, world, &mut target);
+            }
         }
 
         target.finish().unwrap();

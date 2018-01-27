@@ -95,7 +95,12 @@ impl<'a> Iterator for TileIterator<'a> {
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum GameState {
+    StartMenu,
+    Credits,
+    HowToPlay,
     Running,
+    Won,
+    GameOver,
 }
 
 pub struct GameWorld {
@@ -118,6 +123,7 @@ impl GameWorld {
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         match self.game_state {
             GameState::Running => self.update_running(midgar, dt),
+            _ => {}
         }
     }
 
@@ -133,6 +139,11 @@ impl GameWorld {
             _ => 0,
         };
         self.try_move_fox(dx, dy);
+
+        // Check for victory!
+        if self.fox.pos == self.mailbox.pos {
+            self.game_state = GameState::Won;
+        }
     }
 
     fn try_move_fox(&mut self, dx: isize, dy: isize) {
