@@ -209,6 +209,7 @@ fn load_tiles(tilesets: &Vec<Tileset>, midgar: &Midgar) -> Vec<TextureRegion> {
 
     tiles
 }
+
 fn grid_to_isometric(x: u32, y: u32, tile_width: f32, tile_height: f32) -> (f32, f32) {
     let iso_x = (x as i32 - y as i32) as f32 * tile_width / 2.0;
     let iso_y = (x + y) as f32 * tile_height / 2.0;
