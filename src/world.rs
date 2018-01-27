@@ -4,6 +4,7 @@ use std::slice::Iter;
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::{KeyCode, Midgar};
 use std::fs::File;
+use std::path::Path;
 use tiled::{self, PropertyValue};
 use sounds::{Sound, Sounds, AudioController};
 
@@ -236,15 +237,17 @@ impl GameWorld {
     }
 
     fn load_map(map_name: &str, assets_path: &str) -> tiled::Map {
-        let map_path = format!("{}/tiled/maps/{}.tmx", assets_path, map_name);
-        let map_file = File::open(&map_path)
-            .expect(&format!("Could not open map path: {}", map_path));
-        let map = tiled::parse(map_file)
-            .expect(&format!("Could nor parse map file: {}", map_path));
+        let map_str = format!("{}/tiled/maps/{}.tmx", assets_path, map_name);
+        let map_path = Path::new(&map_str);
+        /*let map_file = File::open(&map_path)
+        .expect(&format!("Could not open map path: {}", map_path));*/
+        let map = tiled::parse_file(map_path)
+            .expect(&format!("Could nor parse map file: {}", map_str));
         map
     }
 
     fn load_fox(map: &tiled::Map) -> Option<Fox> {
+
         for object in &map.object_groups[0].objects {
             if object.obj_type == "sneky_fox" {
                 let x = object.x as u32 / map.tile_width;
