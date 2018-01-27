@@ -6,14 +6,80 @@ use midgar::{KeyCode, Midgar};
 use std::fs::File;
 use tiled::{self, PropertyValue};
 
+trait Animal {
+    fn update_pos(&mut self, Vector2<u32>);
+    fn update_dir(&mut self, isize, isize);
+    // FIXME: Assuming walls will prevent going negative.
+    fn try_move(&mut self, level: &Level, pos: &Vector2<u32>, dx: isize, dy: isize) {
+        let new_pos = Vector2::new((pos.x as isize + dx) as u32,
+                                   (pos.y as isize + dy) as u32);
+
+        match level.get_tile(new_pos.x, new_pos.y) {
+            Tile::Floor => {
+                self.update_pos(new_pos);
+                self.update_dir(dx, dy);
+            }
+            // New position is empty, don't do anything.
+            Tile::Empty => {
+            }
+        };
+    }
+}
+
 pub struct Fox {
     pub pos: Vector2<u32>,
+    pub dir: Vector2<isize>,
+    pub has_mail: bool,
 }
 
 impl Fox {
     fn new(x: u32, y: u32) -> Self {
         Fox {
             pos: Vector2::new(x, y),
+            dir: Vector2::new(1, 1),
+            has_mail: false,
+        }
+    }
+}
+
+impl Animal for Fox {
+    fn update_pos(&mut self, new_pos: Vector2<u32>) {
+        self.pos = new_pos;
+    }
+    fn update_dir(&mut self, x: isize, y: isize) {
+        if x != 0 {
+            self.dir.x = x;
+        }
+        if y != 0 {
+            self.dir.y = y;
+        }
+    }
+}
+
+pub struct Pug {
+    pub pos: Vector2<u32>,
+    pub dir: Vector2<isize>,
+}
+
+impl Pug {
+    fn new(x: u32, y: u32) -> Self {
+        Pug {
+            pos: Vector2::new(x, y),
+            dir: Vector2::new(1, 1),
+        }
+    }
+}
+
+impl Animal for Pug {
+    fn update_pos(&mut self, new_pos: Vector2<u32>) {
+        self.pos = new_pos;
+    }
+    fn update_dir(&mut self, x: isize, y: isize) {
+        if x != 0 {
+            self.dir.x = x;
+        }
+        if y != 0 {
+            self.dir.y = y;
         }
     }
 }
@@ -25,6 +91,18 @@ pub struct Mailbox {
 impl Mailbox {
     fn new(x: u32, y: u32) -> Self {
         Mailbox {
+            pos: Vector2::new(x, y),
+        }
+    }
+}
+
+pub struct Mail {
+    pub pos: Vector2<u32>,
+}
+
+impl Mail {
+    fn new(x: u32, y: u32) -> Self {
+        Mail {
             pos: Vector2::new(x, y),
         }
     }
@@ -110,6 +188,7 @@ pub struct GameWorld {
     pub fox: Fox,
     pub mailbox: Mailbox,
     pub level: tiled::Map,
+    pub mail: Mail,
 }
 
 impl GameWorld {
@@ -118,12 +197,15 @@ impl GameWorld {
         let fox = GameWorld::load_fox(&level)
             .expect(&format!("Could not load \"sneky_fox\" from map {}", map_name));
         let mailbox = GameWorld::load_mailbox(&level)
-            .expect(&format!("Could not load "));
+            .expect(&format!("Could not load \"mailbox\" from map {}", map_name));
+        let mail = GameWorld::load_mail(&level)
+            .expect(&format!("Could not load \"mail\" from map {}", map_name));
 
         GameWorld {
             game_state: GameState::Running,
             fox: fox,
             mailbox: mailbox,
+            mail: mail,
             level: level,
         }
     }
@@ -142,7 +224,6 @@ impl GameWorld {
             if object.obj_type == "sneky_fox" {
                 let x = object.x as u32 / map.tile_width;
                 let y = object.y as u32 / map.tile_height;
-                println!("Fox at position ({}, {})", x, y);
                 return Some(Fox::new(x, y));
             }
         }
@@ -151,11 +232,22 @@ impl GameWorld {
 
     fn load_mailbox(map: &tiled::Map) -> Option<Mailbox> {
         for object in &map.object_groups[0].objects {
-            if object.obj_type == "sneky_fox" {
+            if object.obj_type == "mailbox" {
                 let x = object.x as u32 / map.tile_width;
                 let y = object.y as u32 / map.tile_height;
                 return Some(Mailbox::new(x, y));
-            }
+            }            
+        }
+        None
+    }
+
+    fn load_mail(map: &tiled::Map) -> Option<Mail> {
+        for object in &map.object_groups[0].objects {
+            if object.obj_type == "mail" {
+                let x = object.x as u32 / map.tile_width;
+                let y = object.y as u32 / map.tile_height;
+                return Some(Mail::new(x, y));
+            }            
         }
         None
     }
@@ -181,8 +273,12 @@ impl GameWorld {
         self.try_move_fox(dx, dy);
 
         // Check for victory!
-        if self.fox.pos == self.mailbox.pos {
+        if self.fox.pos == self.mailbox.pos && self.fox.has_mail {
             self.game_state = GameState::Won;
+        }
+
+        if self.fox.pos == self.mail.pos {
+            self.fox.has_mail = true;
         }
     }
 
