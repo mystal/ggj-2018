@@ -6,24 +6,6 @@ use midgar::{KeyCode, Midgar};
 use std::fs::File;
 use tiled::{self, PropertyValue};
 
-trait Animal {
-    fn update_pos(&mut self, Vector2<u32>);
-
-    fn update_dir(&mut self, isize, isize);
-
-    fn try_move(&mut self, level: &Level, pos: &Vector2<u32>, dx: isize, dy: isize) {
-        // FIXME: Assuming walls will prevent going negative.
-        let new_pos = Vector2::new((pos.x as isize + dx) as u32,
-                                   (pos.y as isize + dy) as u32);
-
-        let tile_id = level.get_tile(new_pos.x, new_pos.y);
-        if tile_id != 0 {
-            self.update_pos(new_pos);
-            self.update_dir(dx, dy);
-        }
-    }
-}
-
 pub struct Fox {
     pub pos: Vector2<u32>,
     pub dir: Vector2<isize>,
@@ -40,20 +22,6 @@ impl Fox {
     }
 }
 
-impl Animal for Fox {
-    fn update_pos(&mut self, new_pos: Vector2<u32>) {
-        self.pos = new_pos;
-    }
-    fn update_dir(&mut self, x: isize, y: isize) {
-        if x != 0 {
-            self.dir.x = x;
-        }
-        if y != 0 {
-            self.dir.y = y;
-        }
-    }
-}
-
 pub struct Pug {
     pub pos: Vector2<u32>,
     pub dir: Vector2<isize>,
@@ -64,20 +32,6 @@ impl Pug {
         Pug {
             pos: Vector2::new(x, y),
             dir: Vector2::new(1, 1),
-        }
-    }
-}
-
-impl Animal for Pug {
-    fn update_pos(&mut self, new_pos: Vector2<u32>) {
-        self.pos = new_pos;
-    }
-    fn update_dir(&mut self, x: isize, y: isize) {
-        if x != 0 {
-            self.dir.x = x;
-        }
-        if y != 0 {
-            self.dir.y = y;
         }
     }
 }
@@ -104,6 +58,24 @@ impl Mail {
             pos: Vector2::new(x, y),
         }
     }
+}
+
+pub struct Bone {
+    pub pos: Vector2<u32>,
+}
+
+impl Bone {
+    fn new(x: u32, y: u32) -> Self {
+        Bone {
+            pos: Vector2::new(x, y),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub enum Tile {
+    Floor,
+    Empty,
 }
 
 pub struct Level {
@@ -308,17 +280,30 @@ impl GameWorld {
     }
 
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
-        let dx = match (midgar.input().was_key_pressed(KeyCode::Left), (midgar.input().was_key_pressed(KeyCode::Right))) {
-            (true, false) => -1,
-            (false, true) => 1,
-            _ => 0,
+        let mut dx = 0;
+        let mut dy = 0;
+        match (midgar.input().was_key_pressed(KeyCode::Left),
+            (midgar.input().was_key_pressed(KeyCode::Right)),
+            (midgar.input().was_key_pressed(KeyCode::Up)),
+            (midgar.input().was_key_pressed(KeyCode::Down))) {
+            (true, false, false, false) => {
+                dx = -1
+            },
+            (false, true, false, false) => {
+                dx = 1
+            },
+            (false, false, true, false) => {
+                dy = -1
+            },
+            (false, false, false, true) => {
+                dy = 1
+            },
+            _ => {},
         };
-        let dy = match (midgar.input().was_key_pressed(KeyCode::Up), (midgar.input().was_key_pressed(KeyCode::Down))) {
-            (true, false) => -1,
-            (false, true) => 1,
-            _ => 0,
-        };
+
         self.try_move_fox(dx, dy);
+
+        // TODO: iterate through pugs and see if fox is in the square they are pointing to
 
         // Check for victory!
         if self.fox.pos == self.mailbox.pos && self.fox.has_mail {
@@ -338,6 +323,7 @@ impl GameWorld {
         let tile_id = self.level.get_tile(new_pos.x, new_pos.y);
         if tile_id != 0 {
             self.fox.pos = new_pos;
+            self.fox.dir = Vector2::new(dx, dy);
         }
     }
 }
