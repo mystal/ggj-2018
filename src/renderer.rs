@@ -78,15 +78,15 @@ impl GameRenderer {
         let color = [1.0, 1.0, 1.0];
         let width = 32.0;
         let height = 32.0;
-        for (tile, x, y) in world.level.iter_tiles() {
-            match tile {
-                Tile::Floor => {
-                    self.shape.draw_filled_rect(x as f32 * width, y as f32 * height,
-                                                width, height, color, target);
-                }
-                _ => {}
-            }
-        }
+        // for (tile, x, y) in world.level.iter_tiles() {
+        //     match tile {
+        //         Tile::Floor => {
+        //             self.shape.draw_filled_rect(x as f32 * width, y as f32 * height,
+        //                                         width, height, color, target);
+        //         }
+        //         _ => {}
+        //     }
+        // }
 
         // Draw mailbox.
         self.shape.draw_filled_rect(world.mailbox.pos.x as f32 * width, world.mailbox.pos.y as f32 * height,
