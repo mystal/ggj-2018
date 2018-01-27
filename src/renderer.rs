@@ -141,15 +141,19 @@ impl GameRenderer {
 
             // Draw tile texture.
             let texture = &self.tiles[(tile - 1) as usize];
-            let draw_x = (x as i32 - y as i32) as f32 * tile_width / 2.0;
-            let draw_y = (x + y) as f32 * tile_height / 2.0;
+            let (draw_x, draw_y) = grid_to_isometric(x, y, tile_width, tile_height);
             self.sprite.draw(&texture.draw(draw_x, draw_y),
                              draw_params, target);
         }
 
+        // TODO: Draw game objects top-down, left-right in the iso view.
+        // TODO: Figure out object offsets so they sit on tiles correctly.
+
         // Draw mailbox.
-        self.shape.draw_filled_rect(world.mailbox.pos.x as f32 * tile_width, world.mailbox.pos.y as f32 * tile_height,
-                                    16.0, 16.0, [0.0, 0.8, 0.3], target);
+        let pos = world.mailbox.pos;
+        let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+        self.sprite.draw(&self.mailbox.draw(draw_x, draw_y),
+                         draw_params, target);
 
         // Draw mail
         if !world.fox.has_mail {
@@ -158,8 +162,10 @@ impl GameRenderer {
         }
 
         // Draw fox.
-        self.shape.draw_filled_rect(world.fox.pos.x as f32 * tile_width, world.fox.pos.y as f32 * tile_height,
-                                    20.0, 20.0, [1.0, 0.25, 0.0], target);
+        let pos = world.fox.pos;
+        let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+        self.sprite.draw(&self.sneky_fox.draw(draw_x, draw_y),
+                         draw_params, target);
     }
 
     fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S) {
@@ -202,4 +208,9 @@ fn load_tiles(tilesets: &Vec<Tileset>, midgar: &Midgar) -> Vec<TextureRegion> {
     }
 
     tiles
+}
+fn grid_to_isometric(x: u32, y: u32, tile_width: f32, tile_height: f32) -> (f32, f32) {
+    let iso_x = (x as i32 - y as i32) as f32 * tile_width / 2.0;
+    let iso_y = (x + y) as f32 * tile_height / 2.0;
+    (iso_x, iso_y)
 }
