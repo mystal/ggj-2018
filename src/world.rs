@@ -58,6 +58,9 @@ impl Level {
     }
 
     fn get_tile(&self, x: u32, y: u32) -> Tile {
+        if x >= self.width || y >= self.height {
+            return Tile::Empty;
+        }
         let index = (y * self.width) + x;
         // FIXME: Return an Option or Result.
         self.tiles[index as usize]
@@ -119,6 +122,30 @@ impl GameWorld {
     }
 
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
-        // TODO: Look for movement keys and move the fox in the level.
+        let dx = match (midgar.input().was_key_pressed(KeyCode::Left), (midgar.input().was_key_pressed(KeyCode::Right))) {
+            (true, false) => -1,
+            (false, true) => 1,
+            _ => 0,
+        };
+        let dy = match (midgar.input().was_key_pressed(KeyCode::Up), (midgar.input().was_key_pressed(KeyCode::Down))) {
+            (true, false) => -1,
+            (false, true) => 1,
+            _ => 0,
+        };
+        self.try_move_fox(dx, dy);
+    }
+
+    fn try_move_fox(&mut self, dx: isize, dy: isize) {
+        // FIXME: Assuming walls will prevent going negative.
+        let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
+                                   (self.fox.pos.y as isize + dy) as u32);
+
+        match self.level.get_tile(new_pos.x, new_pos.y) {
+            Tile::Floor => {
+                self.fox.pos = new_pos;
+            }
+            // New position is empty, don't do anything.
+            Tile::Empty => {}
+        }
     }
 }
