@@ -4,6 +4,24 @@ use std::slice::Iter;
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::{KeyCode, Midgar};
 
+trait Animal {
+    fn update_pos(&mut self, Vector2<u32>);
+    // FIXME: Assuming walls will prevent going negative.
+    fn try_move(&mut self, level: &Level, pos: &Vector2<u32>, dx: isize, dy: isize) {
+        let new_pos = Vector2::new((pos.x as isize + dx) as u32,
+                                   (pos.y as isize + dy) as u32);
+
+        match level.get_tile(new_pos.x, new_pos.y) {
+            Tile::Floor => {
+                self.update_pos(new_pos);
+            }
+            // New position is empty, don't do anything.
+            Tile::Empty => {
+            }
+        };
+    }
+}
+
 pub struct Fox {
     pub pos: Vector2<u32>,
 }
@@ -13,6 +31,12 @@ impl Fox {
         Fox {
             pos: Vector2::new(x, y),
         }
+    }
+}
+
+impl Animal for Fox {
+    fn update_pos(&mut self, new_pos: Vector2<u32>) {
+        self.pos = new_pos;
     }
 }
 
@@ -147,16 +171,7 @@ impl GameWorld {
     }
 
     fn try_move_fox(&mut self, dx: isize, dy: isize) {
-        // FIXME: Assuming walls will prevent going negative.
-        let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
-                                   (self.fox.pos.y as isize + dy) as u32);
-
-        match self.level.get_tile(new_pos.x, new_pos.y) {
-            Tile::Floor => {
-                self.fox.pos = new_pos;
-            }
-            // New position is empty, don't do anything.
-            Tile::Empty => {}
-        }
+        let pos = self.fox.pos;
+        self.fox.try_move(&self.level, &pos, dx, dy);
     }
 }
