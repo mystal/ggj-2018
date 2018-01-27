@@ -18,11 +18,59 @@ pub struct GameRenderer {
     shape: ShapeRenderer,
     text: TextRenderer,
 
+    background: TextureRegion,
+    tile_grass: TextureRegion,
+    tile_dirt: TextureRegion,
+    sneky_fox: TextureRegion,
+    sneky_fox_with_mail: TextureRegion,
+    mailbox: TextureRegion,
+    letter_1: TextureRegion,
+    letter_2: TextureRegion,
+    pug: TextureRegion,
+
     game_time: f32,
 }
 
 impl GameRenderer {
     pub fn new(midgar: &Midgar) -> Self {
+        // Load textures.
+        let background = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/background.png", false));
+            TextureRegion::new(texture)
+        };
+        let tile_grass = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/tile_grass.png", false));
+            TextureRegion::new(texture)
+        };
+        let tile_dirt = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/tile_dirt.png", false));
+            TextureRegion::new(texture)
+        };
+        let sneky_fox = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_fox.png", false));
+            TextureRegion::new(texture)
+        };
+        let sneky_fox_with_mail = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_fox_with_mail.png", false));
+            TextureRegion::new(texture)
+        };
+        let mailbox = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/mailbox.png", false));
+            TextureRegion::new(texture)
+        };
+        let letter_1 = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/letter_1.png", false));
+            TextureRegion::new(texture)
+        };
+        let letter_2 = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/letter_2.png", false));
+            TextureRegion::new(texture)
+        };
+        let pug = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug.png", false));
+            TextureRegion::new(texture)
+        };
+
         // TODO: For when we have a camera?
         let projection = cgmath::ortho(-(config::GAME_SIZE.x as f32 / 2.0), config::GAME_SIZE.x as f32 / 2.0,
                                        config::GAME_SIZE.y as f32 / 2.0, -(config::GAME_SIZE.y as f32 / 2.0),
@@ -37,6 +85,16 @@ impl GameRenderer {
             shape: ShapeRenderer::new(midgar.graphics().display(), projection),
             text: TextRenderer::new(midgar.graphics().display()),
 
+            background,
+            tile_grass,
+            tile_dirt,
+            sneky_fox,
+            sneky_fox_with_mail,
+            mailbox,
+            letter_1,
+            letter_2,
+            pug,
+
             game_time: 0.0,
         }
     }
@@ -46,7 +104,6 @@ impl GameRenderer {
 
         // Get framebuffer target.
         let mut target = midgar.graphics().display().draw();
-        target.clear_color(0.0, 0.0, 0.0, 1.0);
 
         let draw_params = SpriteDrawParams::new()
             .magnify_filter(MagnifySamplerFilter::Nearest)
@@ -73,6 +130,9 @@ impl GameRenderer {
         let draw_params = SpriteDrawParams::new()
             .magnify_filter(MagnifySamplerFilter::Nearest)
             .alpha(true);
+
+        // Draw background.
+        self.sprite.draw(&self.background.draw(0.0, 0.0), draw_params, target);
 
         // Draw tiles.
         let color = [1.0, 1.0, 1.0];
