@@ -11,9 +11,12 @@ pub struct GameApp {
 
 impl midgar::App for GameApp {
     fn create(midgar: &Midgar) -> Self {
+        let world = GameWorld::new("mockup", config::ASSETS_PATH);
+        let renderer = GameRenderer::new(midgar, &world.level.map.tilesets);
+
         GameApp {
-            world: GameWorld::new("mockup", config::ASSETS_PATH),
-            renderer: GameRenderer::new(midgar),
+            world,
+            renderer,
         }
     }
 
@@ -27,6 +30,6 @@ impl midgar::App for GameApp {
 
         self.world.update(midgar, dt);
 
-        //self.renderer.render(midgar, dt, &self.world);
+        self.renderer.render(midgar, dt, &self.world);
     }
 }

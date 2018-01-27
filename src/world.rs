@@ -8,21 +8,19 @@ use tiled::{self, PropertyValue};
 
 trait Animal {
     fn update_pos(&mut self, Vector2<u32>);
+
     fn update_dir(&mut self, isize, isize);
-    // FIXME: Assuming walls will prevent going negative.
+
     fn try_move(&mut self, level: &Level, pos: &Vector2<u32>, dx: isize, dy: isize) {
+        // FIXME: Assuming walls will prevent going negative.
         let new_pos = Vector2::new((pos.x as isize + dx) as u32,
                                    (pos.y as isize + dy) as u32);
 
-        match level.get_tile(new_pos.x, new_pos.y) {
-            Tile::Floor => {
-                self.update_pos(new_pos);
-                self.update_dir(dx, dy);
-            }
-            // New position is empty, don't do anything.
-            Tile::Empty => {
-            }
-        };
+        let tile_id = level.get_tile(new_pos.x, new_pos.y);
+        if tile_id != 0 {
+            self.update_pos(new_pos);
+            self.update_dir(dx, dy);
+        }
     }
 }
 
@@ -108,70 +106,120 @@ impl Mail {
     }
 }
 
-#[derive(Clone, Copy)]
-pub enum Tile {
-    Floor,
-    Empty,
-}
-
 pub struct Level {
-    pub tiles: Vec<Tile>,
-    pub width: u32,
-    pub height: u32,
+    pub map: tiled::Map,
+    //pub tiles: Vec<Tile>,
+    //pub width: u32,
+    //pub height: u32,
 }
 
 impl Level {
-    fn new() -> Self {
-        use self::Tile::*;
-
-        let tiles = vec![
-            Floor, Empty, Empty,
-            Floor, Floor, Floor,
-            Floor, Empty, Empty,
-            Floor, Empty, Empty,
-        ];
+    fn new(map: tiled::Map) -> Self {
         Level {
-            tiles,
-            width: 3,
-            height: 4,
+            map,
         }
     }
 
-    fn get_tile(&self, x: u32, y: u32) -> Tile {
-        if x >= self.width || y >= self.height {
-            return Tile::Empty;
-        }
-        let index = (y * self.width) + x;
-        // FIXME: Return an Option or Result.
-        self.tiles[index as usize]
+    fn width(&self) -> u32 {
+        self.map.width
     }
 
-    pub fn iter_tiles(&self) -> TileIterator {
-        TileIterator {
-            inner: self.tiles.iter().enumerate(),
-            width: self.width as usize,
-            height: self.height as usize,
+    fn height(&self) -> u32 {
+        self.map.height
+    }
+
+    fn is_valid(&self, x: u32, y: u32) -> bool {
+        x < self.width() && y < self.height()
+    }
+
+    // Returns a tile ID
+    fn get_tile(&self, x: u32, y: u32) -> u32 {
+        if !self.is_valid(x, y) {
+            return 0;
+        }
+        self.map.layers[0].tiles[y as usize][x as usize]
+    }
+
+    pub fn iter_tiles_diagonal(&self) -> DiagonalTileIterator {
+        DiagonalTileIterator {
+            level: &self,
+            next_tile_pos: Vector2::new(0, 0),
+            last_start_pos: Vector2::new(0, 0),
         }
     }
+
+    //pub fn iter_tiles(&self) -> TileIterator {
+    //    TileIterator {
+    //        inner: self.tiles.iter().enumerate(),
+    //        width: self.width as usize,
+    //        height: self.height as usize,
+    //    }
+    //}
 }
 
-pub struct TileIterator<'a> {
-    inner: Enumerate<Iter<'a, Tile>>,
-    width: usize,
-    height: usize,
+pub struct DiagonalTileIterator<'a> {
+    level: &'a Level,
+    next_tile_pos: Vector2<u32>,
+    last_start_pos: Vector2<u32>,
 }
 
-impl<'a> Iterator for TileIterator<'a> {
-    type Item = (Tile, usize, usize);
+impl<'a> Iterator for DiagonalTileIterator<'a> {
+    // (tile_id, x, y)
+    type Item = (u32, u32, u32);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let tile = self.inner.next();
-        tile.map(|(i, tile)| {
-            let (x, y) = (i % self.width, i / self.width);
-            (*tile, x, y)
-        })
+        // Check if the current x and y are valid, if not we are done.
+        if !self.level.is_valid(self.next_tile_pos.x, self.next_tile_pos.y) {
+            return None;
+        }
+
+        // Save them off to return the current tile.
+        let (x, y) = (self.next_tile_pos.x, self.next_tile_pos.y);
+
+        /* The general algorithm for walking diagonal strips:
+         * Start at 0, 0
+         * Outer loop:
+         *   Move y down until can't anymore.
+         *   Move x over until can't anymore.
+         *   Done.
+         * Inner loop:
+         *   Move x, y up and to the right until can't anymore.
+         **/
+
+        if x < self.level.width() - 1 && y > 0 {
+            // Move up and to the right.
+            self.next_tile_pos = Vector2::new(x + 1, y - 1);
+        } else if self.last_start_pos.y < self.level.height() - 1 {
+            // Move to (0, last_start_pos.y + 1).
+            self.last_start_pos = Vector2::new(0, self.last_start_pos.y + 1);
+            self.next_tile_pos = self.last_start_pos;
+        } else {
+            // Move to (last_start_pos.x + 1, last_start_pos.y)
+            self.last_start_pos = Vector2::new(self.last_start_pos.x + 1, self.last_start_pos.y);
+            self.next_tile_pos = self.last_start_pos;
+        }
+
+        Some((self.level.get_tile(x, y), x, y))
     }
 }
+
+//pub struct TileIterator<'a> {
+//    inner: Enumerate<Iter<'a, Tile>>,
+//    width: usize,
+//    height: usize,
+//}
+//
+//impl<'a> Iterator for TileIterator<'a> {
+//    type Item = (Tile, usize, usize);
+//
+//    fn next(&mut self) -> Option<Self::Item> {
+//        let tile = self.inner.next();
+//        tile.map(|(i, tile)| {
+//            let (x, y) = (i % self.width, i / self.width);
+//            (*tile, x, y)
+//        })
+//    }
+//}
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum GameState {
@@ -187,26 +235,26 @@ pub struct GameWorld {
     pub game_state: GameState,
     pub fox: Fox,
     pub mailbox: Mailbox,
-    pub level: tiled::Map,
+    pub level: Level,
     pub mail: Mail,
 }
 
 impl GameWorld {
     pub fn new(map_name: &str, assets_path: &str) -> Self {
-        let level = GameWorld::load_map(map_name, assets_path);
-        let fox = GameWorld::load_fox(&level)
+        let map = GameWorld::load_map(map_name, assets_path);
+        let fox = GameWorld::load_fox(&map)
             .expect(&format!("Could not load \"sneky_fox\" from map {}", map_name));
-        let mailbox = GameWorld::load_mailbox(&level)
+        let mailbox = GameWorld::load_mailbox(&map)
             .expect(&format!("Could not load \"mailbox\" from map {}", map_name));
-        let mail = GameWorld::load_mail(&level)
+        let mail = GameWorld::load_mail(&map)
             .expect(&format!("Could not load \"mail\" from map {}", map_name));
 
         GameWorld {
             game_state: GameState::Running,
-            fox: fox,
-            mailbox: mailbox,
-            mail: mail,
-            level: level,
+            fox,
+            mailbox,
+            mail,
+            level: Level::new(map),
         }
     }
 
@@ -236,7 +284,7 @@ impl GameWorld {
                 let x = object.x as u32 / map.tile_width;
                 let y = object.y as u32 / map.tile_height;
                 return Some(Mailbox::new(x, y));
-            }            
+            }
         }
         None
     }
@@ -247,7 +295,7 @@ impl GameWorld {
                 let x = object.x as u32 / map.tile_width;
                 let y = object.y as u32 / map.tile_height;
                 return Some(Mail::new(x, y));
-            }            
+            }
         }
         None
     }
@@ -287,8 +335,8 @@ impl GameWorld {
         let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
                                    (self.fox.pos.y as isize + dy) as u32);
 
-        let tile =  self.level.layers[0].tiles[new_pos.y as usize][new_pos.x as usize];
-        if tile != 0 {
+        let tile_id = self.level.get_tile(new_pos.x, new_pos.y);
+        if tile_id != 0 {
             self.fox.pos = new_pos;
         }
     }
