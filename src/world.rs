@@ -27,6 +27,7 @@ trait Animal {
 pub struct Fox {
     pub pos: Vector2<u32>,
     pub dir: Vector2<isize>,
+    pub has_mail: bool,
 }
 
 impl Fox {
@@ -34,6 +35,7 @@ impl Fox {
         Fox {
             pos: Vector2::new(x, y),
             dir: Vector2::new(1, 1),
+            has_mail: false,
         }
     }
 }
@@ -87,6 +89,18 @@ pub struct Mailbox {
 impl Mailbox {
     fn new(x: u32, y: u32) -> Self {
         Mailbox {
+            pos: Vector2::new(x, y),
+        }
+    }
+}
+
+pub struct Mail {
+    pub pos: Vector2<u32>,
+}
+
+impl Mail {
+    fn new(x: u32, y: u32) -> Self {
+        Mail {
             pos: Vector2::new(x, y),
         }
     }
@@ -171,6 +185,7 @@ pub struct GameWorld {
     pub game_state: GameState,
     pub fox: Fox,
     pub mailbox: Mailbox,
+    pub mail: Mail,
     pub level: Level,
 }
 
@@ -180,6 +195,7 @@ impl GameWorld {
             game_state: GameState::Running,
             fox: Fox::new(0, 3),
             mailbox: Mailbox::new(0, 0),
+            mail: Mail::new(2, 1),
             level: Level::new(),
         }
     }
@@ -205,8 +221,12 @@ impl GameWorld {
         self.try_move_fox(dx, dy);
 
         // Check for victory!
-        if self.fox.pos == self.mailbox.pos {
+        if self.fox.pos == self.mailbox.pos && self.fox.has_mail {
             self.game_state = GameState::Won;
+        }
+
+        if self.fox.pos == self.mail.pos {
+            self.fox.has_mail = true;
         }
     }
 

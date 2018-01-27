@@ -152,6 +152,12 @@ impl GameRenderer {
         self.shape.draw_filled_rect(world.mailbox.pos.x as f32 * width, world.mailbox.pos.y as f32 * height,
                                     16.0, 16.0, [0.0, 0.8, 0.3], target);
 
+        // Draw mail
+        if !world.fox.has_mail {
+            self.shape.draw_filled_rect(world.mail.pos.x as f32 * width, world.mail.pos.y as f32 * height,
+                                        16.0, 16.0, [0.0, 0.6, 0.0], target);
+        }
+
         // Draw fox.
         self.shape.draw_filled_rect(world.fox.pos.x as f32 * width, world.fox.pos.y as f32 * height,
                                     20.0, 20.0, [1.0, 0.25, 0.0], target);
