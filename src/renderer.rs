@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use cgmath::{self, Matrix4, Vector2};
 use midgar::{Midgar, Surface};
-//use midgar::graphics::animation::{Animation, PlayMode};
+use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
 use midgar::graphics::text::{self, Font, TextRenderer};
 use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, Sprite, SpriteDrawParams, SpriteRenderer};
@@ -30,8 +30,8 @@ pub struct GameRenderer<'a> {
     mailbox: Sprite<'a>,
     letter_1: Sprite<'a>,
     bone: Sprite<'a>,
-    pug: Sprite<'a>,
-    pug_back: Sprite<'a>,
+    pug_idle_anim: Animation,
+    pug_back_idle_anim: Animation,
     shadow: TextureRegion,
 
     font: Font<'a>,
@@ -107,19 +107,19 @@ impl<'a> GameRenderer<'a> {
             sprite.set_scale(Vector2::new(0.6, 0.6));
             sprite
         };
-        let pug = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug.png", false));
-            let mut sprite = Sprite::new(texture);
-            let size = sprite.size();
-            sprite.set_origin(Vector2::new(62.0 / size.x as f32, 112.0 / size.y as f32));
-            sprite
+        let pug_idle_anim = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug_front_idle.png", false));
+            let mut anim = Animation::new(0.1, &TextureRegion::split(texture, (125, 151)))
+                .unwrap();
+            anim.play_mode = PlayMode::Loop;
+            anim
         };
-        let pug_back = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug_back.png", false));
-            let mut sprite = Sprite::new(texture);
-            let size = sprite.size();
-            sprite.set_origin(Vector2::new(62.0 / size.x as f32, 112.0 / size.y as f32));
-            sprite
+        let pug_back_idle_anim = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug_back_idle.png", false));
+            let mut anim = Animation::new(0.1, &TextureRegion::split(texture, (125, 151)))
+                .unwrap();
+            anim.play_mode = PlayMode::Loop;
+            anim
         };
         let shadow = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/shadow.png", false));
@@ -151,8 +151,8 @@ impl<'a> GameRenderer<'a> {
             mailbox,
             letter_1,
             bone,
-            pug,
-            pug_back,
+            pug_idle_anim,
+            pug_back_idle_anim,
             shadow,
 
             font: text::load_font_from_path("assets/fonts/Indie_Flower/IndieFlower.ttf"),
@@ -350,9 +350,9 @@ impl<'a> GameRenderer<'a> {
         let tile_height = world.level.map.tile_height as f32;
 
         for pug in &world.pugs {
-            let sprite = match pug.dir {
-                Direction::South | Direction::East => &mut self.pug,
-                Direction::North | Direction::West => &mut self.pug_back,
+            let anim = match pug.dir {
+                Direction::South | Direction::East => &mut self.pug_idle_anim,
+                Direction::North | Direction::West => &mut self.pug_back_idle_anim,
             };
             let flip_x = pug.dir == Direction::East || pug.dir == Direction::North;
             let pos = pug.pos;
@@ -361,15 +361,19 @@ impl<'a> GameRenderer<'a> {
                 LiveState::Dead(dead_time) => (true, dead_time * config::FALL_SPEED),
                 _ => (false, 0.0),
             };
-            sprite.set_flip_x(flip_x);
-            sprite.set_flip_y(flip_y);
 
             // Draw shadow if alive.
             if pug.live_state == LiveState::Alive {
                 self.sprite.draw(&self.shadow.draw(draw_x, draw_y - 8.0 + dead_offset), draw_params, target);
             }
+
             // NOTE: Subtract 8 pixels to align to the center of the squares.
-            sprite.set_position(Vector2::new(draw_x, draw_y - 8.0 + dead_offset));
+            let mut sprite = anim.current_key_frame(self.game_time)
+                .draw(draw_x, draw_y - 8.0 + dead_offset);
+            sprite.set_flip_x(flip_x);
+            sprite.set_flip_y(flip_y);
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(62.0 / size.x as f32, 145.0 / size.y as f32));
             self.sprite.draw(&sprite, draw_params, target);
         }
     }
