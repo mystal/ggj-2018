@@ -149,6 +149,15 @@ impl GameRenderer {
         // TODO: Draw game objects top-down, left-right in the iso view.
         // TODO: Figure out object offsets so they sit on tiles correctly.
 
+        // Draw pugs.
+        for pug in &world.pugs {
+            let pos = pug.pos;
+            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+            // NOTE: Subtract 8 pixels to align to the center of the squares.
+            self.sprite.draw(&self.pug.draw(draw_x, draw_y - 8.0),
+                             draw_params, target);
+        }
+
         // Draw mailbox.
         let pos = world.mailbox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
