@@ -148,7 +148,7 @@ impl<'a> GameRenderer<'a> {
     }
 
     fn draw_over<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
-                // Draw background.
+        // Draw background.
         self.sprite.set_projection_matrix(self.ui_projection);
         self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
                          draw_params, target);
@@ -292,9 +292,6 @@ impl<'a> GameRenderer<'a> {
         let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
                                        config::SCREEN_SIZE.y as f32, 0.0,
                                        -1.0, 1.0);
-        let draw_params = SpriteDrawParams::new()
-            .magnify_filter(MagnifySamplerFilter::Nearest)
-            .alpha(true);
     }
 }
 
