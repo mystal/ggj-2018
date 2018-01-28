@@ -192,9 +192,8 @@ impl<'a> GameRenderer<'a> {
         self.shape.set_projection_matrix(self.projection);
 
         // Draw tiles.
-        // TODO: Get tile width and height from the Tiled map?
-        let tile_width = 180.0;
-        let tile_height = 90.0;
+        let tile_width = world.level.map.tile_width as f32;
+        let tile_height = world.level.map.tile_height as f32;
         for (tile, x, y) in world.level.iter_tiles_diagonal() {
             // Don't draw empty tiles.
             if tile == 0 {
@@ -209,7 +208,6 @@ impl<'a> GameRenderer<'a> {
         }
 
         // TODO: Draw game objects top-down, left-right in the iso view.
-        // TODO: Figure out object offsets so they sit on tiles correctly.
         self.draw_pugs(world, tile_width, tile_height, target, draw_params);
         self.draw_mailbox(world, tile_width, tile_height, target, draw_params);
         self.draw_bones(world, tile_width, tile_height, target, draw_params);

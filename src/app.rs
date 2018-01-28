@@ -3,8 +3,8 @@ use midgar::{self, KeyCode, Midgar};
 
 use config;
 use renderer::GameRenderer;
-use world::GameWorld;
 use sounds::{Sounds, AudioController};
+use world::GameWorld;
 
 pub struct GameApp<'a> {
     world: GameWorld,
