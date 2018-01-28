@@ -128,14 +128,6 @@ impl Level {
             last_start_pos: Vector2::new(0, 0),
         }
     }
-
-    //pub fn iter_tiles(&self) -> TileIterator {
-    //    TileIterator {
-    //        inner: self.tiles.iter().enumerate(),
-    //        width: self.width as usize,
-    //        height: self.height as usize,
-    //    }
-    //}
 }
 
 pub struct DiagonalTileIterator<'a> {
@@ -183,24 +175,6 @@ impl<'a> Iterator for DiagonalTileIterator<'a> {
         Some((self.level.get_tile(x, y), x, y))
     }
 }
-
-//pub struct TileIterator<'a> {
-//    inner: Enumerate<Iter<'a, Tile>>,
-//    width: usize,
-//    height: usize,
-//}
-//
-//impl<'a> Iterator for TileIterator<'a> {
-//    type Item = (Tile, usize, usize);
-//
-//    fn next(&mut self) -> Option<Self::Item> {
-//        let tile = self.inner.next();
-//        tile.map(|(i, tile)| {
-//            let (x, y) = (i % self.width, i / self.width);
-//            (*tile, x, y)
-//        })
-//    }
-//}
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum GameState {
@@ -296,7 +270,7 @@ impl GameWorld {
                 let x = object.x as u32 / (map.tile_width / 2);
                 let y = object.y as u32 / map.tile_height;
                 let facing = match object.properties.get("facing") {
-                    Some(&tiled::PropertyValue::StringValue(ref s)) => s,
+                    Some(&PropertyValue::StringValue(ref s)) => s,
                     _ => "south"
                 };
                 let dir = Pug::facing_to_dir(&facing);
