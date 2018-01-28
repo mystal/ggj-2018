@@ -19,7 +19,11 @@
  </layer>
  <objectgroup name="Object Layer 1">
   <object id="1" x="180" y="-270"/>
-  <object id="2" name="Sneky Fox" type="sneky_fox" x="90" y="270" width="90" height="90"/>
+  <object id="2" name="Sneky Fox" type="sneky_fox" x="90" y="270" width="90" height="90">
+   <properties>
+    <property name="facing" value="west"/>
+   </properties>
+  </object>
   <object id="3" name="Bone" type="bone" x="0" y="180" width="90" height="90"/>
   <object id="4" name="Mail" type="mail" x="90" y="90" width="90" height="90"/>
   <object id="5" name="Pug" type="pug" x="90" y="0" width="90" height="90">

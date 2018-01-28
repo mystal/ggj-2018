@@ -29,7 +29,11 @@
 </data>
  </layer>
  <objectgroup name="Object Layer 1">
-  <object id="1" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90"/>
+  <object id="1" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90">
+   <properties>
+    <property name="facing" value="north"/>
+   </properties>
+  </object>
   <object id="2" name="Mail" type="mail" x="0" y="90" width="90" height="90"/>
   <object id="3" name="Pug" type="pug" x="0" y="0" width="90" height="90">
    <properties>

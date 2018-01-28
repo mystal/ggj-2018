@@ -27,6 +27,10 @@
    </properties>
   </object>
   <object id="5" name="Mailbox" type="mailbox" x="180" y="0" width="90" height="90"/>
-  <object id="10" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90"/>
+  <object id="10" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90">
+   <properties>
+    <property name="facing" value="north"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

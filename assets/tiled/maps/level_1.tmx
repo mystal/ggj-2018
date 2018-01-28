@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="1.1.0" orientation="isometric" renderorder="right-down" width="2" height="3" tilewidth="180" tileheight="90" infinite="0" nextobjectid="4">
- <properties>
-  <property name="next_level" value="level_2"/>
- </properties>
  <tileset firstgid="1" name="sneky_tiles" tilewidth="182" tileheight="106" tilecount="2" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <tile id="0">
@@ -22,6 +19,10 @@
  <objectgroup name="Object Layer 1">
   <object id="1" name="Mailbox" type="mailbox" x="0" y="0" width="90" height="90"/>
   <object id="2" name="Mail" type="mail" x="0" y="90" width="90" height="90"/>
-  <object id="3" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90"/>
+  <object id="3" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90">
+   <properties>
+    <property name="facing" value="north"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
