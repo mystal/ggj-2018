@@ -157,8 +157,10 @@ impl GameRenderer {
 
         // Draw mail
         if !world.fox.has_mail {
-            self.shape.draw_filled_rect(world.mail.pos.x as f32 * tile_width, world.mail.pos.y as f32 * tile_height,
-                                        16.0, 16.0, [0.0, 0.6, 0.0], target);
+            let pos = world.mail.pos;
+            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+            self.sprite.draw(&self.letter_1.draw(draw_x, draw_y),
+                             draw_params, target);
         }
 
         // Draw fox.
