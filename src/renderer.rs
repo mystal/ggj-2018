@@ -180,6 +180,10 @@ impl<'a> GameRenderer<'a> {
                 self.draw_world(world, &mut target, draw_params);
                 self.draw_ui(world, &mut target, draw_params);
             }
+            GameState::Credits => {
+                self.draw_credits(&mut target, draw_params);
+                self.draw_ui(world, &mut target, draw_params);
+            }
             _ => {
                 self.draw_world(world, &mut target, draw_params);
                 self.draw_ui(world, &mut target, draw_params);
@@ -190,6 +194,15 @@ impl<'a> GameRenderer<'a> {
     }
 
     fn draw_title<S: Surface>(&mut self, target: &mut S, draw_params: SpriteDrawParams) {
+        // Draw background and title image.
+        self.sprite.set_projection_matrix(self.ui_projection);
+        self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                         draw_params, target);
+        self.sprite.draw(&self.title.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                         draw_params, target);
+    }
+
+    fn draw_credits<S: Surface>(&mut self, target: &mut S, draw_params: SpriteDrawParams) {
         // Draw background and title image.
         self.sprite.set_projection_matrix(self.ui_projection);
         self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
@@ -384,6 +397,23 @@ impl<'a> GameRenderer<'a> {
                                     80, 82.0, 62.0, 900, &self.ui_projection, target);
                 self.text.draw_text("Mail delivered! Press Enter to proceed!", &self.font, [1.0, 1.0, 1.0],
                                     80, 80.0, 60.0, 900, &self.ui_projection, target);
+            }
+            GameState::Credits => {
+                self.text.draw_text("Justin Hamilton", &self.font, [0.0, 0.0, 0.0],
+                                     50, 400.0, 100.0, 500, &self.ui_projection, target);
+                self.text.draw_text("Gabriel Martinez", &self.font, [0.0, 0.0, 0.0],
+                                     50, 400.0, 150.0, 500, &self.ui_projection, target);
+                self.text.draw_text("Linda Cai", &self.font, [0.0, 0.0, 0.0],
+                                     50, 400.0, 200.0, 500, &self.ui_projection, target);
+                self.text.draw_text("Angelo Yazar", &self.font, [0.0, 0.0, 0.0],
+                                     50, 400.0, 250.0, 500, &self.ui_projection, target);
+
+                if self.game_time.fract() < 0.5 {
+                    self.text.draw_text("You won! Press Enter to restart!", &self.font, [0.0, 0.0, 0.0],
+                                        50, 282.0, 552.0, 900, &self.ui_projection, target);
+                    self.text.draw_text("You won! Press Enter to restart!", &self.font, [1.0, 1.0, 1.0],
+                                        50, 282.0, 550.0, 900, &self.ui_projection, target);
+                }
             }
             _ => {}
         }

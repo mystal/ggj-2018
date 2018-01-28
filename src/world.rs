@@ -488,6 +488,7 @@ impl GameWorld {
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         match self.game_state {
             GameState::StartMenu => self.update_start_menu(midgar, dt),
+            GameState::Credits => self.update_credits(midgar, dt),
             GameState::Running => self.update_running(midgar, dt),
             GameState::GameOver => self.update_over(midgar, dt),
             GameState::Won => self.update_won(midgar, dt),
@@ -498,6 +499,12 @@ impl GameWorld {
     fn update_start_menu(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::Running;
+        }
+    }
+
+    fn update_credits(&mut self, midgar: &Midgar, _dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::Return) {
+            self.game_state = GameState::StartMenu;
         }
     }
 
@@ -683,17 +690,21 @@ impl GameWorld {
     fn update_won(&mut self, midgar: &Midgar, _dt: f32) {
         // Move to the next level if Enter is pressed.
         if midgar.input().was_key_pressed(KeyCode::Return) {
+            self.game_state = GameState::Running;
+
             // Check if there's a level to load, otherwise reload the start stage.
             let (level, fox, mailbox, mail, pugs, bones) = {
                 let next_level = match self.level.map.properties.get("next_level") {
                     Some(&PropertyValue::StringValue(ref next_level)) => next_level,
-                    _ => config::START_LEVEL,
+                    _ => {
+                        self.game_state = GameState::Credits;
+                        config::START_LEVEL
+                    }
                 };
                 GameWorld::load_level(next_level, &self.assets_path)
             };
 
             // TODO: Look into incremental update of self?
-            self.game_state = GameState::Running;
             self.fox = fox;
             self.mailbox = mailbox;
             self.level = level;
