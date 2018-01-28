@@ -82,8 +82,9 @@ impl<'a> GameRenderer<'a> {
             sprite
         };
         let bone = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/temp_bone.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/bone.png", false));
             let mut sprite = Sprite::new(texture);
+            sprite.set_scale(Vector2::new(0.6, 0.6));
             sprite
         };
         let pug = {
