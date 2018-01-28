@@ -250,13 +250,15 @@ impl<'a> GameRenderer<'a> {
     }
 
     fn draw_bones<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
-        for bone in &world.bones {
-            if bone.is_held() {
+        let bones = &world.bones;
+        for bone in bones.iter() {
+            if bone.is_selected() {
                 // Draw locations where fox can throw bone
                 let v = bone.get_throwable_positions(&world.level);
                 for pos in &v {
                     let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
                     self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
+                    self.bone.set_color(cgmath::vec4(1.0, 1.0, 1.0, 0.2));
                     self.sprite.draw(&self.bone, draw_params, target);
                 }
             } else {
@@ -265,6 +267,7 @@ impl<'a> GameRenderer<'a> {
                 let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
                 // NOTE: Subtract 8 pixels to align to the center of the squares.
                 self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
+                self.bone.set_color(cgmath::vec4(1.0, 1.0, 1.0, 1.0));
                 self.sprite.draw(&self.bone, draw_params, target);
             }
 

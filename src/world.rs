@@ -113,38 +113,39 @@ impl Mail {
 
 pub struct Bone {
     pub pos: Vector2<u32>,
-    pub is_held: bool,
+    pub is_selected: bool,
+    pub is_used: bool,
 }
 
 impl Bone {
     fn new(x: u32, y: u32) -> Self {
         Bone {
             pos: Vector2::new(x, y),
-            is_held: false
+            is_selected: false,
+            is_used: false,
         }
     }
 
     pub fn get_throwable_positions(&self, level: &Level) -> Vec<Vector2<u32>> {
         let mut vec = Vec::new();
-        let rng_vec: Vec<isize> = vec!(-1, 0, 1);
+        let rng_vec: Vec<(isize, isize)> = vec!((-1, 0), (1, 0), (0, -1), (0, 1));
 
-        for i in rng_vec.clone() {
-            for j in rng_vec.clone() {
-                if i == 0 && j == 0 {
-                    continue;
-                }
-                let (x, y) = (self.pos.x as isize + i, self.pos.y as isize + j);
-                if level.has_tile(x as u32, y as u32) {
-                    vec.push(Vector2::new(x as u32, y as u32));
-                }
+        for i in rng_vec {
+            let (x, y) = (self.pos.x as isize + i.0, self.pos.y as isize + i.1);
+            if level.has_tile(x as u32, y as u32) {
+                vec.push(Vector2::new(x as u32, y as u32));
             }
         }
 
         vec
     }
 
-    pub fn is_held(&self) -> bool {
-        self.is_held
+    pub fn is_selected(&self) -> bool {
+        self.is_selected
+    }
+
+    pub fn is_used(&self) -> bool {
+        self.is_used
     }
 }
 
@@ -404,7 +405,36 @@ impl GameWorld {
             _ => {},
         };
 
-        self.try_move_fox(dx, dy);
+        let mut fox_has_bone = false;
+        let movement_requested = dx != 0 || dy != 0;
+        {
+            // Check if any bones are activated/selected
+            let bones = &mut self.bones;
+            for ref mut bone in bones.iter_mut() {
+                // Throw the bone
+                if bone.is_selected  && movement_requested {
+                    let new_pos = Vector2::new((bone.pos.x as isize + dx) as u32,
+                                       (bone.pos.y as isize + dy) as u32);
+                    if self.level.has_tile(new_pos.x, new_pos.y) {
+                        bone.pos = new_pos;
+                        bone.is_used = true;
+                        bone.is_selected = false;
+                        fox_has_bone = true;
+                    }
+                }
+
+                if self.fox.pos == bone.pos {
+                    if !bone.is_used {
+                        fox_has_bone = true;
+                        bone.is_selected = true;
+                    }
+                }
+            }
+        }
+
+        if !fox_has_bone {
+            self.try_move_fox(dx as i32, dy as i32);
+        }
 
         for pug in &mut self.pugs {
             // This is weird but probably ok, maybe clamp on negative numbers?
@@ -413,12 +443,6 @@ impl GameWorld {
                 self.sounds.bark.play();
                 self.game_state = GameState::GameOver;
             }
-        }
-
-        // Check if any bones are activated/held
-        let bones = &mut self.bones;
-        for ref mut bone in bones.iter_mut() {
-            bone.is_held = self.fox.pos == bone.pos;
         }
 
         // Check if fox grabbed mail
