@@ -228,6 +228,7 @@ pub struct GameWorld {
     pub pugs: Vec<Pug>,
     pub bones: Vec<Bone>,
     sounds: Sounds,
+    pub time: f32,
 
     assets_path: String,
 }
@@ -253,6 +254,7 @@ impl GameWorld {
             bones,
             level: Level::new(map),
             sounds: Sounds::new(),
+            time: 0.0,
 
             assets_path: assets_path.into(),
         }
@@ -339,7 +341,8 @@ impl GameWorld {
         }
     }
 
-    fn update_over(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_over(&mut self, _midgar: &Midgar, dt: f32) {
+        self.time += dt;
 
     }
 

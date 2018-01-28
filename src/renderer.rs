@@ -135,7 +135,7 @@ impl<'a> GameRenderer<'a> {
                 self.draw_ui(dt, world, &mut target, draw_params);
             }
             GameState::GameOver => {
-                self.draw_world(dt, world, &mut target, draw_params);
+                self.draw_over(dt, world, &mut target, draw_params);
                 self.draw_ui(dt, world, &mut target, draw_params);
             }
             _ => {
@@ -148,6 +148,38 @@ impl<'a> GameRenderer<'a> {
     }
 
     fn draw_over<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
+                // Draw background.
+        self.sprite.set_projection_matrix(self.ui_projection);
+        self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                         draw_params, target);
+
+        self.sprite.set_projection_matrix(self.projection);
+        self.shape.set_projection_matrix(self.projection);
+
+        // Draw tiles.
+        // TODO: Get tile width and height from the Tiled map?
+        let tile_width = 180.0;
+        let tile_height = 90.0;
+        for (tile, x, y) in world.level.iter_tiles_diagonal() {
+            // Don't draw empty tiles.
+            if tile == 0 {
+                continue;
+            }
+
+            // Draw tile texture.
+            let texture = &self.tiles[(tile - 1) as usize];
+            let (draw_x, draw_y) = grid_to_isometric(x, y, tile_width, tile_height);
+            self.sprite.draw(&texture.draw(draw_x, draw_y),
+                             draw_params, target);
+        }
+
+        // TODO: Draw game objects top-down, left-right in the iso view.
+        // TODO: Figure out object offsets so they sit on tiles correctly.
+        self.draw_pugs(world, tile_width, tile_height, target, draw_params);
+        self.draw_mailbox(world, tile_width, tile_height, target, draw_params);
+        self.draw_bones(world, tile_width, tile_height, target, draw_params);
+        self.draw_mail(world, tile_width, tile_height, target, draw_params);
+        self.draw_dead_fox(world, tile_width, tile_height, target, draw_params);
     }
 
     fn draw_world<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
@@ -183,8 +215,17 @@ impl<'a> GameRenderer<'a> {
         self.draw_bones(world, tile_width, tile_height, target, draw_params);
         self.draw_mail(world, tile_width, tile_height, target, draw_params);
         self.draw_fox(world, tile_width, tile_height, target, draw_params);
-
     }
+
+    fn draw_dead_fox<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
+        let texture = &mut self.sneky_fox;
+        let pos = world.fox.pos;
+        let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+        // NOTE: Subtract 8 pixels to align to the center of the squares.
+        texture.set_position(Vector2::new(draw_x, draw_y - 8.0 + world.time * config::FALL_SPEED));
+        self.sprite.draw(texture, draw_params, target);
+    }
+
 
     fn draw_fox<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
         let texture = if world.fox.has_mail {
