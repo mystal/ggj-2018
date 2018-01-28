@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="1.1.0" orientation="isometric" renderorder="right-down" width="3" height="3" tilewidth="180" tileheight="90" infinite="0" nextobjectid="6">
  <properties>
-  <property name="next_level" value="level_4"/>
+  <property name="next_level" value="level_5"/>
  </properties>
  <tileset firstgid="1" name="sneky_tiles" tilewidth="182" tileheight="106" tilecount="2" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
