@@ -76,10 +76,18 @@ impl Fox {
     }
 }
 
+#[derive(PartialEq)]
+pub enum PugState {
+    Guarding,
+    Suprised(Vector2<u32>),
+    Alerted(Vector2<u32>),
+}
+
 pub struct Pug {
     pub live_state: LiveState,
     pub pos: Vector2<u32>,
     pub dir: Direction,
+    pub state: PugState,
 }
 
 impl Pug {
@@ -87,12 +95,79 @@ impl Pug {
         Pug {
             live_state: LiveState::Alive,
             pos: Vector2::new(x, y),
-            dir,
+            dir: dir,
+            state: PugState::Guarding
         }
     }
 
     fn attack(&mut self, fox_pos: Vector2<u32>) {
         self.pos = fox_pos;
+    }
+
+    fn set_guarding(&mut self) {
+        self.state = PugState::Guarding;
+    }
+
+    fn set_alerted(&mut self, alert_pos: Vector2<u32>) {
+        self.state = PugState::Alerted(alert_pos);
+    }
+
+    fn set_suprised(&mut self, bone_pos: Vector2<u32>) {
+        self.state = PugState::Suprised(bone_pos);
+    }
+
+    fn get_watched_pos(&self) -> Vector2<u32> {
+        (self.pos.cast::<i32>() + self.dir.to_vector2()).cast::<u32>()
+    }
+
+    fn is_guarding(&self) -> bool {
+        self.state == PugState::Guarding
+    }
+
+    fn is_suprised(&self) -> bool {
+        if let PugState::Suprised(_) = self.state {
+            return true;
+        }
+        false
+    }
+
+    fn is_alerted(&self) -> bool {
+        if let PugState::Alerted(_) = self.state {
+            return true;
+        }
+        false
+    }
+
+    fn get_alerted_pos(&self) -> Option<Vector2<u32>> {
+        match self.state {
+            PugState::Alerted(pos) => Some(pos),
+            _ => None,
+        }
+    }
+
+    fn get_suprised_pos(&self) -> Option<Vector2<u32>> {
+        match self.state {
+            PugState::Suprised(pos) => Some(pos),
+            _ => None,
+        }
+    }
+
+    fn set_facing(&mut self, new_pos: Vector2<u32>) {
+        let mut facing = self.pos.cast::<i32>() - new_pos.cast::<i32>();
+        if facing.x < 0 {
+            facing.x = -1
+        } else if facing.x > 0 {
+            facing.x = 1
+        }
+
+        if facing.y < 0 {
+            facing.y = -1
+        } else if facing.y > 0 {
+            facing.y = 1
+        }
+
+        let dir = Direction::from_vector2(facing).expect("Set facing should be successful");
+        self.dir = dir;
     }
 }
 
@@ -208,6 +283,50 @@ impl Level {
             level: &self,
             next_tile_pos: Vector2::new(0, 0),
             last_start_pos: Vector2::new(0, 0),
+        }
+    }
+
+        // returns the maybe 8 legal tiles surrounding a single tile
+    fn get_adjacent_eight(&self, pos: Vector2<u32>) -> Vec<Vector2<u32>> {
+        let mut vec = Vec::new();
+        let rng_vec: Vec<(isize, isize)> = vec!((-1, 0), (1, 0),
+                                                (0, -1), (0, 1),
+                                                (-1, 1), (-1, -1),
+                                                (1, 1), (1, -1));
+
+        for i in rng_vec {
+            let (x, y) = (pos.x as isize + i.0, pos.y as isize + i.1);
+            if self.has_tile(x as u32, y as u32) {
+                vec.push(Vector2::new(x as u32, y as u32));
+            }
+        }
+        vec
+    }
+
+    // returns the maybe cardinal 4 legal tiles surrounding a single tile
+    fn get_adjacent_four(&self, pos: Vector2<u32>) -> Vec<Vector2<u32>> {
+        let mut vec = Vec::new();
+        let rng_vec: Vec<(isize, isize)> = vec!((-1, 0), (1, 0),
+                                                (0, -1), (0, 1));
+
+        for i in rng_vec {
+            let (x, y) = (pos.x as isize + i.0, pos.y as isize + i.1);
+            if self.has_tile(x as u32, y as u32) {
+                vec.push(Vector2::new(x as u32, y as u32));
+            }
+        }
+        vec
+    }
+
+    fn apply_bone_to_pugs(&mut self, pugs: &mut Vec<Pug>, bone_pos: Vector2<u32>) {
+        let tiles = self.get_adjacent_eight(bone_pos);
+
+        for pug in pugs {
+            for tile in &tiles {
+                if pug.pos == *tile {
+                    pug.set_suprised(bone_pos);
+                }
+            }
         }
     }
 }
@@ -466,6 +585,8 @@ impl GameWorld {
                         bone.is_selected = false;
                         bone.disappearing_time = DISAPPEARING_TIME;
                         fox_has_bone = true;
+
+                        self.level.apply_bone_to_pugs(&mut self.pugs, new_pos);
                     }
                 }
 
@@ -489,8 +610,10 @@ impl GameWorld {
             }
         }
 
+        // this code is bad I am sorry - Justin
+        let mut fox_has_moved = false;
         if !fox_has_bone {
-            self.try_move_fox(dx as i32, dy as i32);
+            fox_has_moved = self.try_move_fox(dx as i32, dy as i32);
         }
 
         for pug in &mut self.pugs {
@@ -553,10 +676,10 @@ impl GameWorld {
         }
     }
 
-    fn try_move_fox(&mut self, dx: i32, dy: i32) {
+    fn try_move_fox(&mut self, dx: i32, dy: i32) -> bool{
         // Don't try to move if we're not moving!
         if dx == 0 && dy == 0 {
-            return;
+            return false;
         }
 
         // FIXME: Assuming walls will prevent going negative.
@@ -580,6 +703,8 @@ impl GameWorld {
                     }
                 }
             }
+            return true;
         }
+        return false;
     }
 }
