@@ -23,7 +23,7 @@ impl<'a> midgar::App for GameApp<'a> {
         let level = matches.value_of("LEVEL").unwrap_or(config::START_LEVEL.into());
         let world = GameWorld::new(&level, config::ASSETS_PATH);
         let renderer = GameRenderer::new(midgar, &world.level.map.tilesets);
-        let mut sounds = Sounds::new();
+        let sounds = Sounds::new();
 
         GameApp {
             world,
