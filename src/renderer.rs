@@ -197,7 +197,6 @@ impl<'a> GameRenderer<'a> {
         self.sprite.draw(texture, draw_params, target);
     }
 
-    // TODO: Merge draw_dead_fox and draw_fox.
     fn draw_fox<S: Surface>(&mut self, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
         let tile_width = world.level.map.tile_width as f32;
         let tile_height = world.level.map.tile_height as f32;
