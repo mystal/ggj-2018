@@ -22,6 +22,7 @@ pub struct GameRenderer<'a> {
 
     tiles: Vec<TextureRegion>,
     background: TextureRegion,
+    title: TextureRegion,
     sneky_fox: Sprite<'a>,
     sneky_fox_with_mail: Sprite<'a>,
     mailbox: Sprite<'a>,
@@ -41,6 +42,10 @@ impl<'a> GameRenderer<'a> {
         let tiles = load_tiles(tilesets, midgar);
         let background = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/background.png", false));
+            TextureRegion::new(texture)
+        };
+        let title = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/title.png", false));
             TextureRegion::new(texture)
         };
         let sneky_fox = {
@@ -109,6 +114,7 @@ impl<'a> GameRenderer<'a> {
 
             tiles,
             background,
+            title,
             sneky_fox,
             sneky_fox_with_mail,
             mailbox,
@@ -134,6 +140,10 @@ impl<'a> GameRenderer<'a> {
             .alpha(true);
 
         match world.game_state {
+            GameState::StartMenu => {
+                self.draw_title(dt, &mut target, draw_params);
+                self.draw_ui(dt, world, &mut target, draw_params);
+            }
             GameState::Running => {
                 self.draw_world(dt, world, &mut target, draw_params);
                 self.draw_ui(dt, world, &mut target, draw_params);
@@ -145,6 +155,15 @@ impl<'a> GameRenderer<'a> {
         }
 
         target.finish().unwrap();
+    }
+
+    fn draw_title<S: Surface>(&mut self, dt: f32, target: &mut S, draw_params: SpriteDrawParams) {
+        // Draw background and title image.
+        self.sprite.set_projection_matrix(self.ui_projection);
+        self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                         draw_params, target);
+        self.sprite.draw(&self.title.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                         draw_params, target);
     }
 
     fn draw_world<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
@@ -302,6 +321,15 @@ impl<'a> GameRenderer<'a> {
             .alpha(true);
 
         match world.game_state {
+            GameState::StartMenu => {
+                // Draw blinking text!
+                if self.game_time.fract() < 0.5 {
+                    self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
+                                        80, 302.0, 652.0, 900, &self.ui_projection, target);
+                    self.text.draw_text("Press Enter to play!", &self.font, [1.0, 1.0, 1.0],
+                                        80, 300.0, 650.0, 900, &self.ui_projection, target);
+                }
+            }
             GameState::GameOver => {
                 // FIXME: Why does this text render weird???
                 self.text.draw_text("The Pugs win again... Press Enter to retry.", &self.font, [0.0, 0.0, 0.0],

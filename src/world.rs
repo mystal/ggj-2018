@@ -290,7 +290,7 @@ impl GameWorld {
         let (level, fox, mailbox, mail, pugs, bones) = GameWorld::load_level(map_name, assets_path);
 
         GameWorld {
-            game_state: GameState::Running,
+            game_state: GameState::StartMenu,
             fox,
             mailbox,
             mail,
@@ -399,10 +399,17 @@ impl GameWorld {
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         match self.game_state {
+            GameState::StartMenu => self.update_start_menu(midgar, dt),
             GameState::Running => self.update_running(midgar, dt),
             GameState::GameOver => self.update_over(midgar, dt),
             GameState::Won => self.update_won(midgar, dt),
             _ => {}
+        }
+    }
+
+    fn update_start_menu(&mut self, midgar: &Midgar, dt: f32) {
+        if midgar.input().was_key_pressed(KeyCode::Return) {
+            self.game_state = GameState::Running;
         }
     }
 
