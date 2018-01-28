@@ -398,7 +398,9 @@ impl GameWorld {
     }
 
     fn update_over(&mut self, _midgar: &Midgar, dt: f32) {
-        self.time += dt;
+        if let LiveState::Dead(ref mut dead_time) = self.fox.state {
+            *dead_time += dt;
+        }
     }
 
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
@@ -473,6 +475,7 @@ impl GameWorld {
                     // This is weird but probably ok, maybe clamp on negative numbers?
                     if (pug.pos.cast::<i32>() + pug.dir.to_vector2()).cast::<u32>() == self.fox.pos {
                         pug.attack(self.fox.pos);
+                        self.fox.state = LiveState::Dead(0.0);
                         self.sounds.bark.play();
                         self.game_state = GameState::GameOver;
                         // Reset this timer to make the fox falling animation look good.

@@ -138,10 +138,6 @@ impl<'a> GameRenderer<'a> {
                 self.draw_world(dt, world, &mut target, draw_params);
                 self.draw_ui(dt, world, &mut target, draw_params);
             }
-            GameState::GameOver => {
-                self.draw_over(dt, world, &mut target, draw_params);
-                self.draw_ui(dt, world, &mut target, draw_params);
-            }
             _ => {
                 self.draw_world(dt, world, &mut target, draw_params);
                 self.draw_ui(dt, world, &mut target, draw_params);
@@ -149,26 +145,6 @@ impl<'a> GameRenderer<'a> {
         }
 
         target.finish().unwrap();
-    }
-
-    fn draw_over<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
-        // Draw background.
-        self.sprite.set_projection_matrix(self.ui_projection);
-        self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
-                         draw_params, target);
-
-        self.sprite.set_projection_matrix(self.projection);
-        self.shape.set_projection_matrix(self.projection);
-
-        // Draw tiles.
-        self.draw_tiles(world, target, draw_params);
-
-        // TODO: Draw game objects top-down, left-right in the iso view.
-        self.draw_pugs(world, target, draw_params);
-        self.draw_mailbox(world, target, draw_params);
-        self.draw_bones(world, target, draw_params);
-        self.draw_mail(world, target, draw_params);
-        self.draw_dead_fox(world, target, draw_params);
     }
 
     fn draw_world<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
@@ -232,11 +208,16 @@ impl<'a> GameRenderer<'a> {
             &mut self.sneky_fox
         };
         let flip_x = world.fox.dir == Direction::East || world.fox.dir == Direction::North;
-        sprite.set_flip_x(flip_x);
+        let (flip_y, dead_offset) = match world.fox.state {
+            LiveState::Dead(dead_time) => (true, dead_time * config::FALL_SPEED),
+            _ => (false, 0.0),
+        };
         let pos = world.fox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
         // NOTE: Subtract 8 pixels to align to the center of the squares.
-        sprite.set_position(Vector2::new(draw_x, draw_y - 8.0));
+        sprite.set_flip_x(flip_x);
+        sprite.set_flip_y(flip_y);
+        sprite.set_position(Vector2::new(draw_x, draw_y - 8.0 + dead_offset));
         self.sprite.draw(sprite, draw_params, target);
     }
 
