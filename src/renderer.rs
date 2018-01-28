@@ -126,28 +126,31 @@ impl<'a> GameRenderer<'a> {
         let mut target = midgar.graphics().display().draw();
 
         let draw_params = SpriteDrawParams::new()
-            .magnify_filter(MagnifySamplerFilter::Nearest)
+            .magnify_filter(MagnifySamplerFilter::Linear)
             .alpha(true);
 
         match world.game_state {
             GameState::Running => {
-                self.draw_world(dt, world, &mut target);
-                self.draw_ui(dt, world, &mut target);
+                self.draw_world(dt, world, &mut target, draw_params);
+                self.draw_ui(dt, world, &mut target, draw_params);
+            }
+            GameState::GameOver => {
+                self.draw_world(dt, world, &mut target, draw_params);
+                self.draw_ui(dt, world, &mut target, draw_params);
             }
             _ => {
-                self.draw_world(dt, world, &mut target);
-                self.draw_ui(dt, world, &mut target);
+                self.draw_world(dt, world, &mut target, draw_params);
+                self.draw_ui(dt, world, &mut target, draw_params);
             }
         }
 
         target.finish().unwrap();
     }
 
-    fn draw_world<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S) {
-        let draw_params = SpriteDrawParams::new()
-            .magnify_filter(MagnifySamplerFilter::Linear)
-            .alpha(true);
+    fn draw_over<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
+    }
 
+    fn draw_world<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
         // Draw background.
         self.sprite.set_projection_matrix(self.ui_projection);
         self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
@@ -175,42 +178,15 @@ impl<'a> GameRenderer<'a> {
 
         // TODO: Draw game objects top-down, left-right in the iso view.
         // TODO: Figure out object offsets so they sit on tiles correctly.
+        self.draw_pugs(world, tile_width, tile_height, target, draw_params);
+        self.draw_mailbox(world, tile_width, tile_height, target, draw_params);
+        self.draw_bones(world, tile_width, tile_height, target, draw_params);
+        self.draw_mail(world, tile_width, tile_height, target, draw_params);
+        self.draw_fox(world, tile_width, tile_height, target, draw_params);
 
-        // Draw pugs.
-        for pug in &world.pugs {
-            let pos = pug.pos;
-            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-            // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.pug.set_position(Vector2::new(draw_x, draw_y - 8.0));
-            self.sprite.draw(&self.pug, draw_params, target);
-        }
+    }
 
-        // Draw mailbox.
-        let pos = world.mailbox.pos;
-        let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-        // NOTE: Subtract 8 pixels to align to the center of the squares.
-        self.mailbox.set_position(Vector2::new(draw_x, draw_y - 8.0));
-        self.sprite.draw(&self.mailbox, draw_params, target);
-
-        // Draw bones.
-        for bone in &world.bones {
-            let pos = bone.pos;
-            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-            // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
-            self.sprite.draw(&self.bone, draw_params, target);
-        }
-
-        // Draw mail
-        if !world.fox.has_mail {
-            let pos = world.mail.pos;
-            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-            // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.letter_1.set_position(Vector2::new(draw_x, draw_y - 8.0));
-            self.sprite.draw(&self.letter_1, draw_params, target);
-        }
-
-        // Draw fox.
+    fn draw_fox<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
         let texture = if world.fox.has_mail {
             &mut self.sneky_fox_with_mail
         } else {
@@ -223,7 +199,45 @@ impl<'a> GameRenderer<'a> {
         self.sprite.draw(texture, draw_params, target);
     }
 
-    fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S) {
+    fn draw_mail<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
+        if !world.fox.has_mail {
+            let pos = world.mail.pos;
+            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+            // NOTE: Subtract 8 pixels to align to the center of the squares.
+            self.letter_1.set_position(Vector2::new(draw_x, draw_y - 8.0));
+            self.sprite.draw(&self.letter_1, draw_params, target);
+        }
+    }
+
+    fn draw_bones<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
+        for bone in &world.bones {
+            let pos = bone.pos;
+            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+            // NOTE: Subtract 8 pixels to align to the center of the squares.
+            self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
+            self.sprite.draw(&self.bone, draw_params, target);
+        }
+    }
+
+    fn draw_mailbox<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
+        let pos = world.mailbox.pos;
+        let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+        // NOTE: Subtract 8 pixels to align to the center of the squares.
+        self.mailbox.set_position(Vector2::new(draw_x, draw_y - 8.0));
+        self.sprite.draw(&self.mailbox, draw_params, target);
+    }
+
+    fn draw_pugs<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
+            for pug in &world.pugs {
+            let pos = pug.pos;
+            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+            // NOTE: Subtract 8 pixels to align to the center of the squares.
+            self.pug.set_position(Vector2::new(draw_x, draw_y - 8.0));
+            self.sprite.draw(&self.pug, draw_params, target);
+            }
+    }
+
+    fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
         let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
                                        config::SCREEN_SIZE.y as f32, 0.0,
                                        -1.0, 1.0);

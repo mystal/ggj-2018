@@ -296,8 +296,13 @@ impl GameWorld {
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
         match self.game_state {
             GameState::Running => self.update_running(midgar, dt),
+            GameState::GameOver => self.update_over(midgar, dt),
             _ => {}
         }
+    }
+
+    fn update_over(&mut self, midgar: &Midgar, dt: f32) {
+
     }
 
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
