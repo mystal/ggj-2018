@@ -76,17 +76,8 @@ impl Bone {
     }
 }
 
-#[derive(Clone, Copy)]
-pub enum Tile {
-    Floor,
-    Empty,
-}
-
 pub struct Level {
     pub map: tiled::Map,
-    //pub tiles: Vec<Tile>,
-    //pub width: u32,
-    //pub height: u32,
 }
 
 impl Level {

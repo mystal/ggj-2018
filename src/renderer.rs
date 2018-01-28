@@ -152,14 +152,16 @@ impl GameRenderer {
         // Draw mailbox.
         let pos = world.mailbox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-        self.sprite.draw(&self.mailbox.draw(draw_x, draw_y),
+        // NOTE: Subtract 8 pixels to align to the center of the squares.
+        self.sprite.draw(&self.mailbox.draw(draw_x, draw_y - 8.0),
                          draw_params, target);
 
         // Draw mail
         if !world.fox.has_mail {
             let pos = world.mail.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-            self.sprite.draw(&self.letter_1.draw(draw_x, draw_y),
+            // NOTE: Subtract 8 pixels to align to the center of the squares.
+            self.sprite.draw(&self.letter_1.draw(draw_x, draw_y - 8.0),
                              draw_params, target);
         }
 
@@ -171,7 +173,8 @@ impl GameRenderer {
         };
         let pos = world.fox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-        self.sprite.draw(&texture.draw(draw_x, draw_y),
+        // NOTE: Subtract 8 pixels to align to the center of the squares.
+        self.sprite.draw(&texture.draw(draw_x, draw_y - 8.0),
                          draw_params, target);
     }
 
@@ -220,5 +223,6 @@ fn load_tiles(tilesets: &Vec<Tileset>, midgar: &Midgar) -> Vec<TextureRegion> {
 fn grid_to_isometric(x: u32, y: u32, tile_width: f32, tile_height: f32) -> (f32, f32) {
     let iso_x = (x as i32 - y as i32) as f32 * tile_width / 2.0;
     let iso_y = (x + y) as f32 * tile_height / 2.0;
+
     (iso_x, iso_y)
 }
