@@ -24,11 +24,15 @@ pub struct GameRenderer<'a> {
     instructions: TextureRegion,
     title: TextureRegion,
     sneky_fox: Sprite<'a>,
+    sneky_fox_back: Sprite<'a>,
     sneky_fox_with_mail: Sprite<'a>,
+    sneky_fox_with_mail_back: Sprite<'a>,
     mailbox: Sprite<'a>,
     letter_1: Sprite<'a>,
     bone: Sprite<'a>,
     pug: Sprite<'a>,
+    pug_back: Sprite<'a>,
+    shadow: Sprite<'a>,
 
     font: Font<'a>,
 
@@ -52,7 +56,15 @@ impl<'a> GameRenderer<'a> {
             TextureRegion::new(texture)
         };
         let sneky_fox = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_fox.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_front.png", false));
+            let mut sprite = Sprite::new(texture);
+            sprite.set_scale(Vector2::new(0.8, 0.8));
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(92.0 / size.x as f32, 80.0 / size.y as f32));
+            sprite
+        };
+        let sneky_fox_back = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_back.png", false));
             let mut sprite = Sprite::new(texture);
             sprite.set_scale(Vector2::new(0.8, 0.8));
             let size = sprite.size();
@@ -60,7 +72,15 @@ impl<'a> GameRenderer<'a> {
             sprite
         };
         let sneky_fox_with_mail = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_fox_with_mail.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_front_with_mail.png", false));
+            let mut sprite = Sprite::new(texture);
+            sprite.set_scale(Vector2::new(0.8, 0.8));
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(92.0 / size.x as f32, 80.0 / size.y as f32));
+            sprite
+        };
+        let sneky_fox_with_mail_back = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_back_with_mail.png", false));
             let mut sprite = Sprite::new(texture);
             sprite.set_scale(Vector2::new(0.8, 0.8));
             let size = sprite.size();
@@ -94,6 +114,18 @@ impl<'a> GameRenderer<'a> {
             sprite.set_origin(Vector2::new(62.0 / size.x as f32, 112.0 / size.y as f32));
             sprite
         };
+        let pug_back = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug_back.png", false));
+            let mut sprite = Sprite::new(texture);
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(62.0 / size.x as f32, 112.0 / size.y as f32));
+            sprite
+        };
+        let shadow = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/shadow.png", false));
+            let mut sprite = Sprite::new(texture);
+            sprite
+        };
 
         let projection = cgmath::ortho(-(config::GAME_SIZE.x as f32 / 2.0), config::GAME_SIZE.x as f32 / 2.0,
                                        config::GAME_SIZE.y as f32 / 2.0, -(config::GAME_SIZE.y as f32 / 2.0),
@@ -114,11 +146,15 @@ impl<'a> GameRenderer<'a> {
             instructions,
             title,
             sneky_fox,
+            sneky_fox_back,
             sneky_fox_with_mail,
+            sneky_fox_with_mail_back,
             mailbox,
             letter_1,
             bone,
             pug,
+            pug_back,
+            shadow,
 
             font: text::load_font_from_path("assets/fonts/Indie_Flower/IndieFlower.ttf"),
 
