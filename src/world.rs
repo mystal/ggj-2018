@@ -32,10 +32,20 @@ pub struct Pug {
 }
 
 impl Pug {
-    fn new(x: u32, y: u32) -> Self {
+    fn new(x: u32, y: u32, dir: Vector2<isize>) -> Self {
         Pug {
             pos: Vector2::new(x, y),
-            dir: Vector2::new(1, 1),
+            dir: dir,
+        }
+    }
+
+    fn facing_to_dir(facing: &str) -> Vector2<isize> {
+        match facing {
+            "south" => Vector2::new(0, 1),
+            "north" => Vector2::new(0, -1),
+            "west" => Vector2::new(-1, 0),
+            "east" => Vector2::new(1, 0),
+            _ => panic!("Invalid facing {}", facing)
         }
     }
 }
@@ -204,6 +214,7 @@ pub struct GameWorld {
     pub mailbox: Mailbox,
     pub level: Level,
     pub mail: Mail,
+    pub pugs: Vec<Pug>,
     sounds: Sounds,
 }
 
@@ -216,12 +227,14 @@ impl GameWorld {
             .expect(&format!("Could not load \"mailbox\" from map {}", map_name));
         let mail = GameWorld::load_mail(&map)
             .expect(&format!("Could not load \"mail\" from map {}", map_name));
+        let pugs = GameWorld::load_pugs(&map);
 
         GameWorld {
             game_state: GameState::Running,
             fox,
             mailbox,
             mail,
+            pugs,
             level: Level::new(map),
             sounds: Sounds::new(),
         }
@@ -267,6 +280,23 @@ impl GameWorld {
             }
         }
         None
+    }
+
+    fn load_pugs(map: &tiled::Map) -> Vec<Pug> {
+        let mut v: Vec<Pug> = vec!();
+        for object in &map.object_groups[0].objects {
+            if object.obj_type == "pug" {
+                let x = object.x as u32 / (map.tile_width / 2);
+                let y = object.y as u32 / map.tile_height;
+                let facing = match object.properties.get("facing") {
+                    Some(&tiled::PropertyValue::StringValue(ref s)) => s,
+                    _ => "south"
+                };
+                let dir = Pug::facing_to_dir(&facing);
+                v.push(Pug::new(x, y, dir));
+            }
+        }
+        v
     }
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
