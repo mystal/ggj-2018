@@ -619,15 +619,56 @@ impl GameWorld {
         for pug in &mut self.pugs {
             match pug.live_state {
                 LiveState::Alive => {
-                    // Try to attack the fox if it's in sight!
-                    // This is weird but probably ok, maybe clamp on negative numbers?
-                    if (pug.pos.cast::<i32>() + pug.dir.to_vector2()).cast::<u32>() == self.fox.pos {
-                        pug.attack(self.fox.pos);
-                        self.fox.state = LiveState::Dead(0.0);
-                        self.sounds.bark.play();
-                        self.game_state = GameState::GameOver;
-                        // Reset this timer to make the fox falling animation look good.
-                        self.time = 0.0;
+                    match pug.state {
+                        // If the pug is guarding, only move when it sees a fox
+                        PugState::Guarding => {
+                            if pug.get_watched_pos() == self.fox.pos {
+                                pug.attack(self.fox.pos);
+                                self.sounds.bark.play();
+                                self.game_state = GameState::GameOver;
+                            }
+                        },
+                        PugState::Suprised(sup_pos) => {
+                            let four = self.level.get_adjacent_four(sup_pos);
+                            let watched = pug.get_watched_pos();
+
+                            if watched == sup_pos {
+                                pug.set_alerted(watched);
+                            } else if four.iter().find(|&&x| x == watched).is_some() {
+                                pug.set_alerted(watched);
+                            } else {
+                                let mut has_alerted = false;
+                                let pug_four = self.level.get_adjacent_four(pug.pos);
+                                for pug_adj in pug_four {
+                                    if !has_alerted {
+                                        match four.iter().find(|&&x| x == pug_adj) {
+                                            Some(pos) => {
+                                                has_alerted = true;
+                                                pug.set_alerted(*pos);
+                                                pug.set_facing(*pos);
+                                            },
+                                            None => {},
+                                        }
+                                    }
+                                }
+                                if !has_alerted {
+                                    println!("We can't alert anywhere!?");
+                                    pug.set_guarding();
+                                }
+                            }
+                        },
+                        PugState::Alerted(alert_pos) => {
+                            if fox_has_moved {
+                                pug.attack(alert_pos);
+                                pug.set_guarding();
+
+                                if alert_pos == self.fox.pos {
+                                    self.sounds.bark.play();
+                                    self.game_state = GameState::GameOver;
+                                }
+                            }
+                        },
+                        
                     }
                 }
                 LiveState::Dead(ref mut dead_time) => *dead_time += dt,
