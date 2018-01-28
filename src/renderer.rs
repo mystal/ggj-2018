@@ -259,25 +259,26 @@ impl<'a> GameRenderer<'a> {
 
         let bones = &world.bones;
         for bone in bones.iter() {
-            if bone.is_selected() {
-                // Draw locations where fox can throw bone
-                let v = bone.get_throwable_positions(&world.level);
-                for pos in &v {
+            if bone.is_visible() {
+                if bone.is_selected() {
+                    // Draw locations where fox can throw bone
+                    let v = bone.get_throwable_positions(&world.level);
+                    for pos in &v {
+                        let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+                        self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
+                        self.bone.set_color(cgmath::vec4(1.0, 1.0, 1.0, 0.2));
+                        self.sprite.draw(&self.bone, draw_params, target);
+                    }
+                } else {
+                    // Draw bone
+                    let pos = bone.pos;
                     let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+                    // NOTE: Subtract 8 pixels to align to the center of the squares.
                     self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
-                    self.bone.set_color(cgmath::vec4(1.0, 1.0, 1.0, 0.2));
+                    self.bone.set_color(cgmath::vec4(1.0, 1.0, 1.0, 1.0));
                     self.sprite.draw(&self.bone, draw_params, target);
                 }
-            } else {
-                // Draw bone
-                let pos = bone.pos;
-                let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-                // NOTE: Subtract 8 pixels to align to the center of the squares.
-                self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
-                self.bone.set_color(cgmath::vec4(1.0, 1.0, 1.0, 1.0));
-                self.sprite.draw(&self.bone, draw_params, target);
             }
-
         }
     }
 

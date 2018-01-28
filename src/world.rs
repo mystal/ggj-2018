@@ -10,6 +10,8 @@ use tiled::{self, PropertyValue};
 use config;
 use sounds::{Sound, Sounds, AudioController};
 
+const DISAPPEARING_TIME: f32 = 0.5;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Direction {
     North,
@@ -115,6 +117,8 @@ pub struct Bone {
     pub pos: Vector2<u32>,
     pub is_selected: bool,
     pub is_used: bool,
+    pub is_visible: bool,
+    pub disappearing_time: f32,
 }
 
 impl Bone {
@@ -123,6 +127,8 @@ impl Bone {
             pos: Vector2::new(x, y),
             is_selected: false,
             is_used: false,
+            is_visible: true,
+            disappearing_time: 0.0,
         }
     }
 
@@ -146,6 +152,10 @@ impl Bone {
 
     pub fn is_used(&self) -> bool {
         self.is_used
+    }
+
+    pub fn is_visible(&self) -> bool {
+        self.is_visible
     }
 }
 
@@ -419,10 +429,22 @@ impl GameWorld {
                         bone.pos = new_pos;
                         bone.is_used = true;
                         bone.is_selected = false;
+                        bone.disappearing_time = DISAPPEARING_TIME;
                         fox_has_bone = true;
                     }
                 }
 
+                // Make the bone flicker if we just threw it
+                if bone.is_used {
+                    if bone.disappearing_time > 0.0 {
+                        bone.disappearing_time -= dt;
+                        bone.is_visible = (bone.disappearing_time * 100.0).round() % 10.0 == 0.0;
+                    } else {
+                        bone.is_visible = false;
+                    }
+                }
+
+                // Make fox grab bone
                 if self.fox.pos == bone.pos {
                     if !bone.is_used {
                         fox_has_bone = true;
