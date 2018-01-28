@@ -32,7 +32,7 @@ pub struct GameRenderer<'a> {
     bone: Sprite<'a>,
     pug: Sprite<'a>,
     pug_back: Sprite<'a>,
-    shadow: Sprite<'a>,
+    shadow: TextureRegion,
 
     font: Font<'a>,
 
@@ -123,8 +123,7 @@ impl<'a> GameRenderer<'a> {
         };
         let shadow = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/shadow.png", false));
-            let mut sprite = Sprite::new(texture);
-            sprite
+            TextureRegion::new(texture)
         };
 
         let projection = cgmath::ortho(-(config::GAME_SIZE.x as f32 / 2.0), config::GAME_SIZE.x as f32 / 2.0,
@@ -266,6 +265,11 @@ impl<'a> GameRenderer<'a> {
         // NOTE: Subtract 8 pixels to align to the center of the squares.
         sprite.set_flip_x(flip_x);
         sprite.set_flip_y(flip_y);
+
+        // Draw shadow if alive.
+        if world.fox.state == LiveState::Alive {
+            self.sprite.draw(&self.shadow.draw(draw_x, draw_y - 8.0 + dead_offset), draw_params, target);
+        }
         sprite.set_position(Vector2::new(draw_x, draw_y - 8.0 + dead_offset));
         self.sprite.draw(sprite, draw_params, target);
     }
@@ -277,6 +281,8 @@ impl<'a> GameRenderer<'a> {
 
             let pos = world.mail.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+
+            self.sprite.draw(&self.shadow.draw(draw_x, draw_y - 8.0), draw_params, target);
             // NOTE: Subtract 8 pixels to align to the center of the squares.
             self.letter_1.set_position(Vector2::new(draw_x, draw_y - 8.0));
             self.sprite.draw(&self.letter_1, draw_params, target);
@@ -303,6 +309,8 @@ impl<'a> GameRenderer<'a> {
                     // Draw bone
                     let pos = bone.pos;
                     let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+
+                    self.sprite.draw(&self.shadow.draw(draw_x, draw_y - 8.0), draw_params, target);
                     // NOTE: Subtract 8 pixels to align to the center of the squares.
                     self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
                     self.bone.set_color(cgmath::vec4(1.0, 1.0, 1.0, 1.0));
@@ -318,6 +326,8 @@ impl<'a> GameRenderer<'a> {
 
         let pos = world.mailbox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+
+        self.sprite.draw(&self.shadow.draw(draw_x, draw_y - 8.0), draw_params, target);
         // NOTE: Subtract 8 pixels to align to the center of the squares.
         self.mailbox.set_position(Vector2::new(draw_x, draw_y - 8.0));
         self.sprite.draw(&self.mailbox, draw_params, target);
@@ -341,6 +351,11 @@ impl<'a> GameRenderer<'a> {
             };
             sprite.set_flip_x(flip_x);
             sprite.set_flip_y(flip_y);
+
+            // Draw shadow if alive.
+            if pug.live_state == LiveState::Alive {
+                self.sprite.draw(&self.shadow.draw(draw_x, draw_y - 8.0 + dead_offset), draw_params, target);
+            }
             // NOTE: Subtract 8 pixels to align to the center of the squares.
             sprite.set_position(Vector2::new(draw_x, draw_y - 8.0 + dead_offset));
             self.sprite.draw(&sprite, draw_params, target);
