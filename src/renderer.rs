@@ -296,9 +296,9 @@ impl<'a> GameRenderer<'a> {
                 // Draw blinking text!
                 if self.game_time.fract() < 0.5 {
                     self.text.draw_text("Press Enter to play!", &self.font, [0.0, 0.0, 0.0],
-                                        80, 302.0, 652.0, 900, &self.ui_projection, target);
+                                        80, 282.0, 652.0, 900, &self.ui_projection, target);
                     self.text.draw_text("Press Enter to play!", &self.font, [1.0, 1.0, 1.0],
-                                        80, 300.0, 650.0, 900, &self.ui_projection, target);
+                                        80, 280.0, 650.0, 900, &self.ui_projection, target);
                 }
             }
             GameState::GameOver => {
