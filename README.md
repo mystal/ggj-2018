@@ -13,8 +13,11 @@ If you throw a bone adjacent to pugs they will move to investigate.
 ## Credits
 
 Angelo Yazar - Art
+
 Gabriel Martinez - Programming
+
 Justin Hamilton - Programming
+
 Linda Cai - Programmng, Level Design
 
 ## Additional Credits
