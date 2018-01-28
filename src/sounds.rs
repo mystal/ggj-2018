@@ -5,6 +5,7 @@ pub struct Sounds {
     pub background_music: Music,
     pub won_level: Sound,
     pub got_mail: Sound,
+    pub bark: Sound,
 }
 
 impl Sounds {
@@ -13,10 +14,12 @@ impl Sounds {
         background_music.set_looping(true);
         let won_level = Sound::new("assets/sounds/won_level.wav").expect("Error on loading won_level.");
         let got_mail = Sound::new("assets/sounds/got_mail.wav").expect("Error on loading got_mail.");
+        let bark = Sound::new("assets/sounds/bark.wav").expect("Error loading bark.");
         Sounds {
             background_music,
             won_level,
             got_mail,
+            bark,
         }
     }
 
