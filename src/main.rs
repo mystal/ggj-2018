@@ -10,8 +10,8 @@ extern crate tiled;
 mod app;
 mod config;
 mod renderer;
-mod world;
 mod sounds;
+mod world;
 
 fn main() {
     let app_config = midgar::MidgarAppConfig::new()
