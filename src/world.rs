@@ -13,6 +13,7 @@ pub struct Fox {
     pub dir: Vector2<isize>,
     pub has_mail: bool,
     pub move_sound: Sound,
+    pub bone: Option<Bone>
 }
 
 impl Fox {
@@ -22,6 +23,7 @@ impl Fox {
             dir: Vector2::new(1, 1),
             has_mail: false,
             move_sound: Sounds::fox_move(),
+            bone: None,
         }
     }
 }
@@ -80,13 +82,38 @@ impl Mail {
 
 pub struct Bone {
     pub pos: Vector2<u32>,
+    pub is_held: bool,
 }
 
 impl Bone {
     fn new(x: u32, y: u32) -> Self {
         Bone {
             pos: Vector2::new(x, y),
+            is_held: false
         }
+    }
+
+    pub fn get_throwable_positions(&self, level: &Level) -> Vec<Vector2<u32>> {
+        let mut vec = Vec::new();
+        let rng_vec: Vec<isize> = vec!(-1, 0, 1);
+
+        for i in rng_vec.clone() {
+            for j in rng_vec.clone() {
+                if i == 0 && j == 0 {
+                    continue;
+                }
+                let (x, y) = (self.pos.x as isize + i, self.pos.y as isize + j);
+                if level.has_tile(x as u32, y as u32) {
+                    vec.push(Vector2::new(x as u32, y as u32));
+                }
+            }
+        }
+
+        vec
+    }
+
+    pub fn is_held(&self) -> bool {
+        self.is_held
     }
 }
 
@@ -119,6 +146,10 @@ impl Level {
             return 0;
         }
         self.map.layers[0].tiles[y as usize][x as usize]
+    }
+
+    fn has_tile(&self, x: u32, y: u32) -> bool {
+        self.get_tile(x, y) != 0
     }
 
     pub fn iter_tiles_diagonal(&self) -> DiagonalTileIterator {
@@ -338,6 +369,13 @@ impl GameWorld {
             }
         }
 
+        // Check if any bones are activated/held
+        let bones = &mut self.bones;
+        for ref mut bone in bones.iter_mut() {
+            bone.is_held = self.fox.pos == bone.pos;
+        }
+
+        // Check if fox grabbed mail
         if !self.fox.has_mail && self.fox.pos == self.mail.pos {
             self.sounds.got_mail.play();
             self.fox.has_mail = true;
@@ -355,8 +393,7 @@ impl GameWorld {
         let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
                                    (self.fox.pos.y as isize + dy) as u32);
 
-        let tile_id = self.level.get_tile(new_pos.x, new_pos.y);
-        if tile_id != 0 {
+        if self.level.has_tile(new_pos.x, new_pos.y) {
             if dx != 0 || dy != 0 {
                 self.fox.move_sound.play();
             }
