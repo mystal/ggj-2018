@@ -239,8 +239,6 @@ impl GameWorld {
     fn load_map(map_name: &str, assets_path: &str) -> tiled::Map {
         let map_str = format!("{}/tiled/maps/{}.tmx", assets_path, map_name);
         let map_path = Path::new(&map_str);
-        /*let map_file = File::open(&map_path)
-        .expect(&format!("Could not open map path: {}", map_path));*/
         let map = tiled::parse_file(map_path)
             .expect(&format!("Could nor parse map file: {}", map_str));
         map
@@ -250,7 +248,7 @@ impl GameWorld {
 
         for object in &map.object_groups[0].objects {
             if object.obj_type == "sneky_fox" {
-                let x = object.x as u32 / map.tile_width;
+                let x = object.x as u32 / (map.tile_width / 2);
                 let y = object.y as u32 / map.tile_height;
                 return Some(Fox::new(x, y));
             }
@@ -261,7 +259,7 @@ impl GameWorld {
     fn load_mailbox(map: &tiled::Map) -> Option<Mailbox> {
         for object in &map.object_groups[0].objects {
             if object.obj_type == "mailbox" {
-                let x = object.x as u32 / map.tile_width;
+                let x = object.x as u32 / (map.tile_width / 2);
                 let y = object.y as u32 / map.tile_height;
                 return Some(Mailbox::new(x, y));
             }
@@ -272,7 +270,7 @@ impl GameWorld {
     fn load_mail(map: &tiled::Map) -> Option<Mail> {
         for object in &map.object_groups[0].objects {
             if object.obj_type == "mail" {
-                let x = object.x as u32 / map.tile_width;
+                let x = object.x as u32 / (map.tile_width / 2);
                 let y = object.y as u32 / map.tile_height;
                 return Some(Mail::new(x, y));
             }
