@@ -625,6 +625,7 @@ impl GameWorld {
                             if pug.get_watched_pos() == self.fox.pos {
                                 pug.attack(self.fox.pos);
                                 self.sounds.bark.play();
+                                self.fox.state = LiveState::Dead(0.0);
                                 self.game_state = GameState::GameOver;
                             }
                         },
@@ -664,11 +665,11 @@ impl GameWorld {
 
                                 if alert_pos == self.fox.pos {
                                     self.sounds.bark.play();
+                                    self.fox.state = LiveState::Dead(0.0);
                                     self.game_state = GameState::GameOver;
                                 }
                             }
                         },
-                        
                     }
                 }
                 LiveState::Dead(ref mut dead_time) => *dead_time += dt,
