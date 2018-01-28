@@ -313,15 +313,15 @@ impl GameWorld {
 
         // TODO: iterate through pugs and see if fox is in the square they are pointing to
 
+        if !self.fox.has_mail && self.fox.pos == self.mail.pos {
+            self.sounds.got_mail.play();
+            self.fox.has_mail = true;
+        }
+
         // Check for victory!
         if self.fox.pos == self.mailbox.pos && self.fox.has_mail {
             self.sounds.won_level.play();
             self.game_state = GameState::Won;
-        }
-
-        if self.fox.pos == self.mail.pos {
-            self.sounds.got_mail.play();
-            self.fox.has_mail = true;
         }
     }
 
