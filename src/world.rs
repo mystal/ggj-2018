@@ -324,15 +324,15 @@ impl GameWorld {
     }
 
     fn try_move_fox(&mut self, dx: isize, dy: isize) {
-        if dx != 0 || dy != 0 {
-            self.fox.move_sound.play();
-        }
         // FIXME: Assuming walls will prevent going negative.
         let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
                                    (self.fox.pos.y as isize + dy) as u32);
 
         let tile_id = self.level.get_tile(new_pos.x, new_pos.y);
         if tile_id != 0 {
+            if dx != 0 || dy != 0 {
+                self.fox.move_sound.play();
+            }
             self.fox.pos = new_pos;
             self.fox.dir = Vector2::new(dx, dy);
         }
