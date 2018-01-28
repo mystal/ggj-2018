@@ -192,15 +192,6 @@ impl<'a> GameRenderer<'a> {
         self.mailbox.set_position(Vector2::new(draw_x, draw_y - 8.0));
         self.sprite.draw(&self.mailbox, draw_params, target);
 
-        // Draw bones.
-        for bone in &world.bones {
-            let pos = bone.pos;
-            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-            // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
-            self.sprite.draw(&self.bone, draw_params, target);
-        }
-
         // Draw mail
         if !world.fox.has_mail {
             let pos = world.mail.pos;
@@ -208,6 +199,26 @@ impl<'a> GameRenderer<'a> {
             // NOTE: Subtract 8 pixels to align to the center of the squares.
             self.letter_1.set_position(Vector2::new(draw_x, draw_y - 8.0));
             self.sprite.draw(&self.letter_1, draw_params, target);
+        }
+
+        let bones = &world.bones;
+        for bone in bones.iter() {
+            if bone.is_held() {
+                // Draw locations where fox can throw bone
+                let v = bone.get_throwable_positions(&world.level);
+                for pos in &v {
+                    let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+                    self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
+                    self.sprite.draw(&self.bone, draw_params, target);
+                }
+            } else {
+                // Draw bone
+                let pos = bone.pos;
+                let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+                // NOTE: Subtract 8 pixels to align to the center of the squares.
+                self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
+                self.sprite.draw(&self.bone, draw_params, target);
+            }
         }
 
         // Draw fox.
