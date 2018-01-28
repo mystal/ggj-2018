@@ -1,11 +1,13 @@
+use std::fs::File;
 use std::iter::Enumerate;
+use std::path::Path;
 use std::slice::Iter;
 
 use cgmath::{self, Vector2, InnerSpace};
 use midgar::{KeyCode, Midgar};
-use std::fs::File;
-use std::path::Path;
 use tiled::{self, PropertyValue};
+
+use config;
 use sounds::{Sound, Sounds, AudioController};
 
 pub struct Fox {
@@ -226,6 +228,8 @@ pub struct GameWorld {
     pub pugs: Vec<Pug>,
     pub bones: Vec<Bone>,
     sounds: Sounds,
+
+    assets_path: String,
 }
 
 impl GameWorld {
@@ -249,6 +253,8 @@ impl GameWorld {
             bones,
             level: Level::new(map),
             sounds: Sounds::new(),
+
+            assets_path: assets_path.into(),
         }
     }
 
@@ -320,7 +326,7 @@ impl GameWorld {
                 vec.push(Bone::new(x, y));
             }
         }
-        
+
         vec
     }
 
@@ -328,6 +334,7 @@ impl GameWorld {
         match self.game_state {
             GameState::Running => self.update_running(midgar, dt),
             GameState::GameOver => self.update_over(midgar, dt),
+            GameState::Won => self.update_won(midgar, dt),
             _ => {}
         }
     }
@@ -385,6 +392,38 @@ impl GameWorld {
         if self.fox.pos == self.mailbox.pos && self.fox.has_mail {
             self.sounds.won_level.play();
             self.game_state = GameState::Won;
+        }
+    }
+
+    fn update_won(&mut self, midgar: &Midgar, dt: f32) {
+        // Move to the next level if Enter is pressed.
+        if midgar.input().was_key_pressed(KeyCode::Return) {
+            // Check if there's a level to load, otherwise reload the start stage.
+            let (map, fox, mailbox, mail, pugs, bones) = {
+                let next_level = match self.level.map.properties.get("next_level") {
+                    Some(&PropertyValue::StringValue(ref next_level)) => next_level,
+                    _ => config::START_LEVEL,
+                };
+                let map = GameWorld::load_map(next_level, &self.assets_path);
+                let fox = GameWorld::load_fox(&map)
+                    .expect(&format!("Could not load \"sneky_fox\" from map {}", next_level));
+                let mailbox = GameWorld::load_mailbox(&map)
+                    .expect(&format!("Could not load \"mailbox\" from map {}", next_level));
+                let mail = GameWorld::load_mail(&map)
+                    .expect(&format!("Could not load \"mail\" from map {}", next_level));
+                let pugs = GameWorld::load_pugs(&map);
+                let bones = GameWorld::load_bones(&map);
+                (map, fox, mailbox, mail, pugs, bones)
+            };
+
+            // TODO: Look into incremental update of self?
+            self.game_state = GameState::Running;
+            self.fox = fox;
+            self.mailbox = mailbox;
+            self.level = Level::new(map);
+            self.mail = mail;
+            self.pugs = pugs;
+            self.bones = bones;
         }
     }
 
