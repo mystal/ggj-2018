@@ -27,7 +27,11 @@
   <object id="5" x="177.455" y="-60.5591"/>
   <object id="7" x="182" y="182"/>
   <object id="9" x="182" y="0"/>
-  <object id="10" name="Pug" type="pug" x="180" y="90" width="90" height="90"/>
+  <object id="10" name="Pug" type="pug" x="180" y="90" width="90" height="90">
+   <properties>
+    <property name="facing" value="west"/>
+   </properties>
+  </object>
   <object id="11" x="364" y="273"/>
   <object id="12" x="91" y="91"/>
   <object id="13" x="182" y="91"/>
