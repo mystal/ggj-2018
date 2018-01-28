@@ -27,6 +27,7 @@ pub struct GameRenderer {
     mailbox: TextureRegion,
     letter_1: TextureRegion,
     letter_2: TextureRegion,
+    bone: TextureRegion,
     pug: TextureRegion,
 
     game_time: f32,
@@ -60,6 +61,10 @@ impl GameRenderer {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/letter_2.png", false));
             TextureRegion::new(texture)
         };
+        let bone = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/temp_bone.png", false));
+            TextureRegion::new(texture)
+        };
         let pug = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug.png", false));
             TextureRegion::new(texture)
@@ -86,6 +91,7 @@ impl GameRenderer {
             mailbox,
             letter_1,
             letter_2,
+            bone,
             pug,
 
             game_time: 0.0,
@@ -164,6 +170,14 @@ impl GameRenderer {
         // NOTE: Subtract 8 pixels to align to the center of the squares.
         self.sprite.draw(&self.mailbox.draw(draw_x, draw_y - 8.0),
                          draw_params, target);
+
+        let bones = &world.bones;
+        for bone in bones.iter() {
+            let pos = bone.pos;
+            let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+            self.sprite.draw(&self.bone.draw(draw_x, draw_y),
+                             draw_params, target);
+        }
 
         // Draw mail
         if !world.fox.has_mail {

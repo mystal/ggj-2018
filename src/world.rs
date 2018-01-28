@@ -215,6 +215,7 @@ pub struct GameWorld {
     pub level: Level,
     pub mail: Mail,
     pub pugs: Vec<Pug>,
+    pub bones: Vec<Bone>,
     sounds: Sounds,
 }
 
@@ -228,6 +229,7 @@ impl GameWorld {
         let mail = GameWorld::load_mail(&map)
             .expect(&format!("Could not load \"mail\" from map {}", map_name));
         let pugs = GameWorld::load_pugs(&map);
+        let bones = GameWorld::load_bones(&map);
 
         GameWorld {
             game_state: GameState::Running,
@@ -235,6 +237,7 @@ impl GameWorld {
             mailbox,
             mail,
             pugs,
+            bones,
             level: Level::new(map),
             sounds: Sounds::new(),
         }
@@ -297,6 +300,19 @@ impl GameWorld {
             }
         }
         v
+    }
+
+    fn load_bones(map: &tiled::Map) -> Vec<Bone> {
+        let mut vec = Vec::new();
+        for object in &map.object_groups[0].objects {
+            if object.obj_type == "bone" {
+                let x = object.x as u32 / (map.tile_width / 2);
+                let y = object.y as u32 / map.tile_height;
+                vec.push(Bone::new(x, y));
+            }
+        }
+        
+        vec
     }
 
     pub fn update(&mut self, midgar: &Midgar, dt: f32) {
