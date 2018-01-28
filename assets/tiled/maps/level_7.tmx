@@ -13,7 +13,7 @@
   <data encoding="csv">
 1,1,1,0,0,0,
 1,0,0,0,1,0,
-1,1,1,0,1,0,
+1,1,1,1,1,0,
 1,0,1,1,1,1,
 1,1,1,1,1,0
 </data>
@@ -52,7 +52,7 @@
    </properties>
   </object>
   <object id="12" name="Bone" type="bone" x="90" y="360" width="90" height="90"/>
-  <object id="13" name="Bone" type="bone" x="270" y="270" width="90" height="90"/>
-  <object id="14" name="Bone" type="bone" x="180" y="180" width="90" height="90"/>
+  <object id="13" name="Bone" type="bone" x="270" y="360" width="90" height="90"/>
+  <object id="14" name="Bone" type="bone" x="270" y="180" width="90" height="90"/>
  </objectgroup>
 </map>
