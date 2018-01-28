@@ -10,19 +10,58 @@ use tiled::{self, PropertyValue};
 use config;
 use sounds::{Sound, Sounds, AudioController};
 
+#[derive(Clone, Copy, Debug)]
+pub enum Direction {
+    North,
+    South,
+    East,
+    West,
+}
+
+impl Direction {
+    fn from_str(dir_str: &str) -> Option<Self> {
+        match dir_str {
+            "north" => Some(Direction::North),
+            "south" => Some(Direction::South),
+            "east" => Some(Direction::East),
+            "west" => Some(Direction::West),
+            _ => None,
+        }
+    }
+
+    fn from_vector2(dir_vec: Vector2<i32>) -> Option<Self> {
+        match (dir_vec.x, dir_vec.y) {
+            (0, -1) => Some(Direction::North),
+            (0, 1) => Some(Direction::South),
+            (1, 0) => Some(Direction::East),
+            (-1, 0) => Some(Direction::West),
+            _ => None
+        }
+    }
+
+    fn to_vector2(&self) -> Vector2<i32> {
+        match *self {
+            Direction::North => Vector2::new(0, -1),
+            Direction::South => Vector2::new(0, 1),
+            Direction::East => Vector2::new(1, 0),
+            Direction::West => Vector2::new(-1, 0),
+        }
+    }
+}
+
 pub struct Fox {
     pub pos: Vector2<u32>,
-    pub dir: Vector2<isize>,
+    pub dir: Direction,
     pub has_mail: bool,
     pub move_sound: Sound,
     pub bone: Option<Bone>
 }
 
 impl Fox {
-    fn new(x: u32, y: u32) -> Self {
+    fn new(x: u32, y: u32, dir: Direction) -> Self {
         Fox {
             pos: Vector2::new(x, y),
-            dir: Vector2::new(1, 1),
+            dir,
             has_mail: false,
             move_sound: Sounds::fox_move(),
             bone: None,
@@ -32,29 +71,19 @@ impl Fox {
 
 pub struct Pug {
     pub pos: Vector2<u32>,
-    pub dir: Vector2<isize>,
+    pub dir: Direction,
 }
 
 impl Pug {
-    fn new(x: u32, y: u32, dir: Vector2<isize>) -> Self {
+    fn new(x: u32, y: u32, dir: Direction) -> Self {
         Pug {
             pos: Vector2::new(x, y),
-            dir: dir,
+            dir,
         }
     }
 
     fn attack(&mut self, fox_pos: Vector2<u32>) {
         self.pos = fox_pos;
-    }
-
-    fn facing_to_dir(facing: &str) -> Vector2<isize> {
-        match facing {
-            "south" => Vector2::new(0, 1),
-            "north" => Vector2::new(0, -1),
-            "west" => Vector2::new(-1, 0),
-            "east" => Vector2::new(1, 0),
-            _ => panic!("Invalid facing {}", facing)
-        }
     }
 }
 
@@ -274,7 +303,13 @@ impl GameWorld {
             if object.obj_type == "sneky_fox" {
                 let x = object.x as u32 / (map.tile_width / 2);
                 let y = object.y as u32 / map.tile_height;
-                return Some(Fox::new(x, y));
+                let facing = match object.properties.get("facing") {
+                    Some(&PropertyValue::StringValue(ref s)) => s,
+                    _ => "north"
+                };
+                let dir = Direction::from_str(facing)
+                    .unwrap_or(Direction::North);
+                return Some(Fox::new(x, y, dir));
             }
         }
         None
@@ -312,7 +347,8 @@ impl GameWorld {
                     Some(&PropertyValue::StringValue(ref s)) => s,
                     _ => "south"
                 };
-                let dir = Pug::facing_to_dir(&facing);
+                let dir = Direction::from_str(facing)
+                    .unwrap_or(Direction::South);
                 v.push(Pug::new(x, y, dir));
             }
         }
@@ -372,7 +408,7 @@ impl GameWorld {
 
         for pug in &mut self.pugs {
             // This is weird but probably ok, maybe clamp on negative numbers?
-            if (pug.pos.cast::<isize>() + pug.dir).cast::<u32>() == self.fox.pos {
+            if (pug.pos.cast::<i32>() + pug.dir.to_vector2()).cast::<u32>() == self.fox.pos {
                 pug.attack(self.fox.pos);
                 self.sounds.bark.play();
                 self.game_state = GameState::GameOver;
@@ -430,17 +466,22 @@ impl GameWorld {
         }
     }
 
-    fn try_move_fox(&mut self, dx: isize, dy: isize) {
+    fn try_move_fox(&mut self, dx: i32, dy: i32) {
+        // Don't try to move if we're not moving!
+        if dx == 0 && dy == 0 {
+            return;
+        }
+
         // FIXME: Assuming walls will prevent going negative.
-        let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
-                                   (self.fox.pos.y as isize + dy) as u32);
+        let new_pos = Vector2::new((self.fox.pos.x as i32 + dx) as u32,
+                                   (self.fox.pos.y as i32 + dy) as u32);
 
         if self.level.has_tile(new_pos.x, new_pos.y) {
-            if dx != 0 || dy != 0 {
-                self.fox.move_sound.play();
-            }
+            self.fox.move_sound.play();
+            let fox_delta = Vector2::new(dx, dy);
             self.fox.pos = new_pos;
-            self.fox.dir = Vector2::new(dx, dy);
+            self.fox.dir = Direction::from_vector2(fox_delta)
+                .expect(&format!("Unexpected fox delta {:?}", fox_delta));
         }
     }
 }
