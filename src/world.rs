@@ -5,11 +5,13 @@ use cgmath::{self, Vector2, InnerSpace};
 use midgar::{KeyCode, Midgar};
 use std::fs::File;
 use tiled::{self, PropertyValue};
+use sounds::{Sound, Sounds, AudioController};
 
 pub struct Fox {
     pub pos: Vector2<u32>,
     pub dir: Vector2<isize>,
     pub has_mail: bool,
+    pub move_sound: Sound,
 }
 
 impl Fox {
@@ -18,6 +20,7 @@ impl Fox {
             pos: Vector2::new(x, y),
             dir: Vector2::new(1, 1),
             has_mail: false,
+            move_sound: Sounds::fox_move(),
         }
     }
 }
@@ -209,6 +212,7 @@ pub struct GameWorld {
     pub mailbox: Mailbox,
     pub level: Level,
     pub mail: Mail,
+    sounds: Sounds,
 }
 
 impl GameWorld {
@@ -227,6 +231,7 @@ impl GameWorld {
             mailbox,
             mail,
             level: Level::new(map),
+            sounds: Sounds::new(),
         }
     }
 
@@ -307,15 +312,20 @@ impl GameWorld {
 
         // Check for victory!
         if self.fox.pos == self.mailbox.pos && self.fox.has_mail {
+            self.sounds.won_level.play();
             self.game_state = GameState::Won;
         }
 
         if self.fox.pos == self.mail.pos {
+            self.sounds.got_mail.play();
             self.fox.has_mail = true;
         }
     }
 
     fn try_move_fox(&mut self, dx: isize, dy: isize) {
+        if dx != 0 || dy != 0 {
+            self.fox.move_sound.play();
+        }
         // FIXME: Assuming walls will prevent going negative.
         let new_pos = Vector2::new((self.fox.pos.x as isize + dx) as u32,
                                    (self.fox.pos.y as isize + dy) as u32);
