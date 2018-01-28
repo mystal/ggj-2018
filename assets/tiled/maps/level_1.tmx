@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.0" orientation="isometric" renderorder="right-down" width="2" height="3" tilewidth="180" tileheight="90" infinite="0" nextobjectid="8">
- <tileset firstgid="1" source="sneky_tiles.tsx"/>
+<map version="1.0" tiledversion="1.1.0" orientation="isometric" renderorder="right-down" width="2" height="3" tilewidth="180" tileheight="90" infinite="0" nextobjectid="4">
+  <tileset firstgid="1" name="sneky_tiles" tilewidth="182" tileheight="106" tilecount="2" columns="0">
+  <grid orientation="orthogonal" width="1" height="1"/>
+  <tile id="0">
+   <image width="182" height="106" source="../../textures/tile_grass.png"/>
+  </tile>
+  <tile id="1">
+   <image width="182" height="106" source="../../textures/tile_dirt.png"/>
+  </tile>
+ </tileset>
  <layer name="Tile Layer 1" width="2" height="3">
   <data encoding="csv">
 1,0,
@@ -9,8 +17,8 @@
 </data>
  </layer>
  <objectgroup name="Object Layer 1">
-  <object id="5" name="Mailbox" type="mailbox" x="0" y="0" width="90" height="90"/>
-  <object id="6" name="Mail" type="mail" x="0" y="90" width="90" height="90"/>
-  <object id="7" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90"/>
+  <object id="1" name="Mailbox" type="mailbox" x="0" y="0" width="90" height="90"/>
+  <object id="2" name="Mail" type="mail" x="0" y="90" width="90" height="90"/>
+  <object id="3" name="Sneky Fox" type="sneky_fox" x="0" y="180" width="90" height="90"/>
  </objectgroup>
 </map>
