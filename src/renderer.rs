@@ -148,7 +148,7 @@ impl<'a> GameRenderer<'a> {
     }
 
     fn draw_over<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
-                // Draw background.
+        // Draw background.
         self.sprite.set_projection_matrix(self.ui_projection);
         self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
                          draw_params, target);
@@ -174,7 +174,6 @@ impl<'a> GameRenderer<'a> {
         }
 
         // TODO: Draw game objects top-down, left-right in the iso view.
-        // TODO: Figure out object offsets so they sit on tiles correctly.
         self.draw_pugs(world, tile_width, tile_height, target, draw_params);
         self.draw_mailbox(world, tile_width, tile_height, target, draw_params);
         self.draw_bones(world, tile_width, tile_height, target, draw_params);
@@ -226,16 +225,18 @@ impl<'a> GameRenderer<'a> {
 
 
     fn draw_fox<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
-        let texture = if world.fox.has_mail {
+        let sprite = if world.fox.has_mail {
             &mut self.sneky_fox_with_mail
         } else {
             &mut self.sneky_fox
         };
+        let flip_x = world.fox.dir == Direction::East || world.fox.dir == Direction::North;
+        sprite.set_flip_x(flip_x);
         let pos = world.fox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
         // NOTE: Subtract 8 pixels to align to the center of the squares.
-        texture.set_position(Vector2::new(draw_x, draw_y - 8.0));
-        self.sprite.draw(texture, draw_params, target);
+        sprite.set_position(Vector2::new(draw_x, draw_y - 8.0));
+        self.sprite.draw(sprite, draw_params, target);
     }
 
     fn draw_mail<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
@@ -279,13 +280,15 @@ impl<'a> GameRenderer<'a> {
     }
 
     fn draw_pugs<S: Surface>(&mut self, world: &GameWorld, tile_width: f32, tile_height: f32, target: &mut S, draw_params: SpriteDrawParams) {
-            for pug in &world.pugs {
+        for pug in &world.pugs {
+            let flip_x = pug.dir == Direction::East || pug.dir == Direction::North;
+            self.pug.set_flip_x(flip_x);
             let pos = pug.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
             // NOTE: Subtract 8 pixels to align to the center of the squares.
             self.pug.set_position(Vector2::new(draw_x, draw_y - 8.0));
             self.sprite.draw(&self.pug, draw_params, target);
-            }
+        }
     }
 
     fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {

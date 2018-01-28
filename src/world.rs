@@ -10,7 +10,7 @@ use tiled::{self, PropertyValue};
 use config;
 use sounds::{Sound, Sounds, AudioController};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Direction {
     North,
     South,
@@ -476,6 +476,7 @@ impl GameWorld {
         let new_pos = Vector2::new((self.fox.pos.x as i32 + dx) as u32,
                                    (self.fox.pos.y as i32 + dy) as u32);
 
+        // TODO: Consider allowing to change directions when trying to move into a wall.
         if self.level.has_tile(new_pos.x, new_pos.y) {
             self.fox.move_sound.play();
             let fox_delta = Vector2::new(dx, dy);
