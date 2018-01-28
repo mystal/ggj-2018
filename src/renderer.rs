@@ -23,6 +23,7 @@ pub struct GameRenderer<'a> {
     background: TextureRegion,
     instructions: TextureRegion,
     title: TextureRegion,
+    win_screen: TextureRegion,
     sneky_fox: Sprite<'a>,
     sneky_fox_back: Sprite<'a>,
     sneky_fox_with_mail: Sprite<'a>,
@@ -53,6 +54,10 @@ impl<'a> GameRenderer<'a> {
         };
         let title = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/title.png", false));
+            TextureRegion::new(texture)
+        };
+        let win_screen = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/you_are_winner.png", false));
             TextureRegion::new(texture)
         };
         let sneky_fox = {
@@ -144,6 +149,7 @@ impl<'a> GameRenderer<'a> {
             background,
             instructions,
             title,
+            win_screen,
             sneky_fox,
             sneky_fox_back,
             sneky_fox_with_mail,
@@ -207,7 +213,7 @@ impl<'a> GameRenderer<'a> {
         self.sprite.set_projection_matrix(self.ui_projection);
         self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
                          draw_params, target);
-        self.sprite.draw(&self.title.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+        self.sprite.draw(&self.win_screen.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
                          draw_params, target);
     }
 
@@ -403,20 +409,22 @@ impl<'a> GameRenderer<'a> {
                                     80, 80.0, 60.0, 900, &self.ui_projection, target);
             }
             GameState::Credits => {
+                let names_margin = 800.0;
+                let font_size = 40;
                 self.text.draw_text("Justin Hamilton", &self.font, [0.0, 0.0, 0.0],
-                                     50, 400.0, 100.0, 500, &self.ui_projection, target);
+                                     font_size, names_margin, 400.0, 500, &self.ui_projection, target);
                 self.text.draw_text("Gabriel Martinez", &self.font, [0.0, 0.0, 0.0],
-                                     50, 400.0, 150.0, 500, &self.ui_projection, target);
+                                     font_size, names_margin, 450.0, 500, &self.ui_projection, target);
                 self.text.draw_text("Linda Cai", &self.font, [0.0, 0.0, 0.0],
-                                     50, 400.0, 200.0, 500, &self.ui_projection, target);
+                                     font_size, names_margin, 500.0, 500, &self.ui_projection, target);
                 self.text.draw_text("Angelo Yazar", &self.font, [0.0, 0.0, 0.0],
-                                     50, 400.0, 250.0, 500, &self.ui_projection, target);
+                                     font_size, names_margin, 550.0, 500, &self.ui_projection, target);
 
                 if self.game_time.fract() < 0.5 {
-                    self.text.draw_text("You won! Press Enter to restart!", &self.font, [0.0, 0.0, 0.0],
-                                        50, 282.0, 552.0, 900, &self.ui_projection, target);
-                    self.text.draw_text("You won! Press Enter to restart!", &self.font, [1.0, 1.0, 1.0],
-                                        50, 282.0, 550.0, 900, &self.ui_projection, target);
+                    self.text.draw_text("Press Enter to restart!", &self.font, [0.0, 0.0, 0.0],
+                                        50, 292.0, 702.0, 900, &self.ui_projection, target);
+                    self.text.draw_text("Press Enter to restart!", &self.font, [1.0, 1.0, 1.0],
+                                        50, 292.0, 700.0, 900, &self.ui_projection, target);
                 }
             }
             _ => {}
