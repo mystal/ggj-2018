@@ -250,10 +250,11 @@ impl<'a> GameRenderer<'a> {
         let tile_width = world.level.map.tile_width as f32;
         let tile_height = world.level.map.tile_height as f32;
 
-        let sprite = if world.fox.has_mail {
-            &mut self.sneky_fox_with_mail
-        } else {
-            &mut self.sneky_fox
+        let sprite = match (world.fox.has_mail, world.fox.dir) {
+            (false, Direction::South) | (false, Direction::East) => &mut self.sneky_fox,
+            (false, Direction::North) | (false, Direction::West) => &mut self.sneky_fox_back,
+            (true, Direction::South) | (true, Direction::East) => &mut self.sneky_fox_with_mail,
+            (true, Direction::North) | (true, Direction::West) => &mut self.sneky_fox_with_mail_back,
         };
         let flip_x = world.fox.dir == Direction::East || world.fox.dir == Direction::North;
         let (flip_y, dead_offset) = match world.fox.state {
@@ -327,6 +328,10 @@ impl<'a> GameRenderer<'a> {
         let tile_height = world.level.map.tile_height as f32;
 
         for pug in &world.pugs {
+            let sprite = match pug.dir {
+                Direction::South | Direction::East => &mut self.pug,
+                Direction::North | Direction::West => &mut self.pug_back,
+            };
             let flip_x = pug.dir == Direction::East || pug.dir == Direction::North;
             let pos = pug.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
@@ -334,11 +339,11 @@ impl<'a> GameRenderer<'a> {
                 LiveState::Dead(dead_time) => (true, dead_time * config::FALL_SPEED),
                 _ => (false, 0.0),
             };
-            self.pug.set_flip_x(flip_x);
-            self.pug.set_flip_y(flip_y);
+            sprite.set_flip_x(flip_x);
+            sprite.set_flip_y(flip_y);
             // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.pug.set_position(Vector2::new(draw_x, draw_y - 8.0 + dead_offset));
-            self.sprite.draw(&self.pug, draw_params, target);
+            sprite.set_position(Vector2::new(draw_x, draw_y - 8.0 + dead_offset));
+            self.sprite.draw(&sprite, draw_params, target);
         }
     }
 
