@@ -21,6 +21,7 @@ pub struct GameRenderer<'a> {
 
     tiles: Vec<TextureRegion>,
     background: TextureRegion,
+    instructions: TextureRegion,
     title: TextureRegion,
     sneky_fox: Sprite<'a>,
     sneky_fox_with_mail: Sprite<'a>,
@@ -39,6 +40,11 @@ impl<'a> GameRenderer<'a> {
         // Load textures.
         let tiles = load_tiles(tilesets, midgar);
         let background = {
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/background.png", false));
+            TextureRegion::new(texture)
+        };
+        let instructions = {
+            // TODO: Replace with the new texture.
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/background.png", false));
             TextureRegion::new(texture)
         };
@@ -105,6 +111,7 @@ impl<'a> GameRenderer<'a> {
 
             tiles,
             background,
+            instructions,
             title,
             sneky_fox,
             sneky_fox_with_mail,
@@ -159,8 +166,17 @@ impl<'a> GameRenderer<'a> {
     fn draw_world<S: Surface>(&mut self, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
         // Draw background.
         self.sprite.set_projection_matrix(self.ui_projection);
-        self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
-                         draw_params, target);
+
+        // FIXME: Don't hard code this, but whatever.
+        if world.level.level_name == "mockup" {
+            // Draw the instructions background for the mockup level.
+            self.sprite.draw(&self.instructions.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                             draw_params, target);
+        } else {
+            // Draw the default background.
+            self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
+                             draw_params, target);
+        }
 
         self.sprite.set_projection_matrix(self.projection);
         self.shape.set_projection_matrix(self.projection);

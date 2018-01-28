@@ -573,7 +573,7 @@ impl GameWorld {
 
             // Kill any pugs.
             for pug in &mut self.pugs {
-                if new_pos == pug.pos {
+                if new_pos == pug.pos && pug.state == LiveState::Alive {
                     pug.state = LiveState::Dead(0.0);
                     if !self.sounds.lost_level.is_playing() {
                         self.sounds.lost_level.play();
