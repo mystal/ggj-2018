@@ -8,6 +8,5 @@ cgmath = "0.15"
 clap = "2.29"
 midgar = { git = "https://github.com/mystal/midgar-engine", branch = "jammin" }
 rand = "0.3"
-rand_derive = "0.3"
 ears = "0.4.0"
 tiled = "0.7.3"

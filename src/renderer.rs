@@ -1,12 +1,11 @@
 use std::rc::Rc;
 
 use cgmath::{self, Matrix4, Vector2};
-use cgmath::prelude::*;
 use midgar::{Midgar, Surface};
-use midgar::graphics::animation::{Animation, PlayMode};
+//use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
 use midgar::graphics::text::{self, Font, TextRenderer};
-use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, Sprite, SpriteDrawParams, SpriteRenderer};
+use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, Sprite, SpriteDrawParams, SpriteRenderer};
 use midgar::graphics::texture::{TextureRegion, TextureRegionHolder};
 use tiled::Tileset;
 
@@ -27,7 +26,6 @@ pub struct GameRenderer<'a> {
     sneky_fox_with_mail: Sprite<'a>,
     mailbox: Sprite<'a>,
     letter_1: Sprite<'a>,
-    letter_2: Sprite<'a>,
     bone: Sprite<'a>,
     pug: Sprite<'a>,
 
@@ -78,16 +76,9 @@ impl<'a> GameRenderer<'a> {
             sprite.set_origin(Vector2::new(32.0 / size.x as f32, 47.0 / size.y as f32));
             sprite
         };
-        let letter_2 = {
-            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/letter_2.png", false));
-            let mut sprite = Sprite::new(texture);
-            // TODO: If we use this, set its origin to be drawn nicely on the grid.
-            sprite
-        };
         let bone = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/temp_bone.png", false));
             let mut sprite = Sprite::new(texture);
-            let size = sprite.size();
             sprite
         };
         let pug = {
@@ -119,7 +110,6 @@ impl<'a> GameRenderer<'a> {
             sneky_fox_with_mail,
             mailbox,
             letter_1,
-            letter_2,
             bone,
             pug,
 
@@ -141,23 +131,23 @@ impl<'a> GameRenderer<'a> {
 
         match world.game_state {
             GameState::StartMenu => {
-                self.draw_title(dt, &mut target, draw_params);
-                self.draw_ui(dt, world, &mut target, draw_params);
+                self.draw_title(&mut target, draw_params);
+                self.draw_ui(world, &mut target, draw_params);
             }
             GameState::Running => {
-                self.draw_world(dt, world, &mut target, draw_params);
-                self.draw_ui(dt, world, &mut target, draw_params);
+                self.draw_world(world, &mut target, draw_params);
+                self.draw_ui(world, &mut target, draw_params);
             }
             _ => {
-                self.draw_world(dt, world, &mut target, draw_params);
-                self.draw_ui(dt, world, &mut target, draw_params);
+                self.draw_world(world, &mut target, draw_params);
+                self.draw_ui(world, &mut target, draw_params);
             }
         }
 
         target.finish().unwrap();
     }
 
-    fn draw_title<S: Surface>(&mut self, dt: f32, target: &mut S, draw_params: SpriteDrawParams) {
+    fn draw_title<S: Surface>(&mut self, target: &mut S, draw_params: SpriteDrawParams) {
         // Draw background and title image.
         self.sprite.set_projection_matrix(self.ui_projection);
         self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
@@ -166,7 +156,7 @@ impl<'a> GameRenderer<'a> {
                          draw_params, target);
     }
 
-    fn draw_world<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
+    fn draw_world<S: Surface>(&mut self, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
         // Draw background.
         self.sprite.set_projection_matrix(self.ui_projection);
         self.sprite.draw(&self.background.draw(config::SCREEN_SIZE.x as f32 / 2.0, config::SCREEN_SIZE.y as f32 / 2.0),
@@ -202,18 +192,6 @@ impl<'a> GameRenderer<'a> {
             self.sprite.draw(&texture.draw(draw_x, draw_y),
                              draw_params, target);
         }
-    }
-
-    fn draw_dead_fox<S: Surface>(&mut self, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
-        let tile_width = world.level.map.tile_width as f32;
-        let tile_height = world.level.map.tile_height as f32;
-
-        let texture = &mut self.sneky_fox;
-        let pos = world.fox.pos;
-        let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-        // NOTE: Subtract 8 pixels to align to the center of the squares.
-        texture.set_position(Vector2::new(draw_x, draw_y - 8.0 + world.time * config::FALL_SPEED));
-        self.sprite.draw(texture, draw_params, target);
     }
 
     fn draw_fox<S: Surface>(&mut self, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
@@ -312,14 +290,7 @@ impl<'a> GameRenderer<'a> {
         }
     }
 
-    fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
-        let projection = cgmath::ortho(0.0, config::SCREEN_SIZE.x as f32,
-                                       config::SCREEN_SIZE.y as f32, 0.0,
-                                       -1.0, 1.0);
-        let draw_params = SpriteDrawParams::new()
-            .magnify_filter(MagnifySamplerFilter::Nearest)
-            .alpha(true);
-
+    fn draw_ui<S: Surface>(&mut self, world: &GameWorld, target: &mut S, _draw_params: SpriteDrawParams) {
         match world.game_state {
             GameState::StartMenu => {
                 // Draw blinking text!

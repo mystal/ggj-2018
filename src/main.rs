@@ -2,8 +2,6 @@ extern crate cgmath;
 extern crate clap;
 extern crate midgar;
 extern crate rand;
-#[macro_use]
-extern crate rand_derive;
 extern crate ears;
 extern crate tiled;
 

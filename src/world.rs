@@ -1,9 +1,6 @@
-use std::fs::File;
-use std::iter::Enumerate;
 use std::path::Path;
-use std::slice::Iter;
 
-use cgmath::{self, Vector2, InnerSpace};
+use cgmath::Vector2;
 use midgar::{KeyCode, Midgar};
 use tiled::{self, PropertyValue};
 
@@ -265,7 +262,6 @@ impl<'a> Iterator for DiagonalTileIterator<'a> {
 pub enum GameState {
     StartMenu,
     Credits,
-    HowToPlay,
     Running,
     Won,
     GameOver,
@@ -407,7 +403,7 @@ impl GameWorld {
         }
     }
 
-    fn update_start_menu(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_start_menu(&mut self, midgar: &Midgar, _dt: f32) {
         if midgar.input().was_key_pressed(KeyCode::Return) {
             self.game_state = GameState::Running;
         }
@@ -534,7 +530,7 @@ impl GameWorld {
         }
     }
 
-    fn update_won(&mut self, midgar: &Midgar, dt: f32) {
+    fn update_won(&mut self, midgar: &Midgar, _dt: f32) {
         // Move to the next level if Enter is pressed.
         if midgar.input().was_key_pressed(KeyCode::Return) {
             // Check if there's a level to load, otherwise reload the start stage.
