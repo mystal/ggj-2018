@@ -6,13 +6,13 @@ use renderer::GameRenderer;
 use world::GameWorld;
 use sounds::{Sounds, AudioController};
 
-pub struct GameApp {
+pub struct GameApp<'a> {
     world: GameWorld,
-    renderer: GameRenderer,
+    renderer: GameRenderer<'a>,
     sounds: Sounds,
 }
 
-impl midgar::App for GameApp {
+impl<'a> midgar::App for GameApp<'a> {
     fn create(midgar: &Midgar) -> Self {
         // Parse args.
         let matches = App::new("Sneky Fox")

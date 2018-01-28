@@ -1,19 +1,19 @@
 use std::rc::Rc;
 
-use cgmath::{self, Matrix4};
+use cgmath::{self, Matrix4, Vector2};
 use cgmath::prelude::*;
 use midgar::{Midgar, Surface};
 use midgar::graphics::animation::{Animation, PlayMode};
 use midgar::graphics::shape::ShapeRenderer;
 use midgar::graphics::text::{self, Font, TextRenderer};
-use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, SpriteDrawParams, SpriteRenderer};
-use midgar::graphics::texture::TextureRegion;
+use midgar::graphics::sprite::{DrawTexture, MagnifySamplerFilter, SamplerWrapFunction, Sprite, SpriteDrawParams, SpriteRenderer};
+use midgar::graphics::texture::{TextureRegion, TextureRegionHolder};
 use tiled::Tileset;
 
 use config;
 use world::*;
 
-pub struct GameRenderer {
+pub struct GameRenderer<'a> {
     projection: Matrix4<f32>,
     ui_projection: Matrix4<f32>,
     sprite: SpriteRenderer,
@@ -22,18 +22,18 @@ pub struct GameRenderer {
 
     tiles: Vec<TextureRegion>,
     background: TextureRegion,
-    sneky_fox: TextureRegion,
-    sneky_fox_with_mail: TextureRegion,
-    mailbox: TextureRegion,
-    letter_1: TextureRegion,
-    letter_2: TextureRegion,
-    bone: TextureRegion,
-    pug: TextureRegion,
+    sneky_fox: Sprite<'a>,
+    sneky_fox_with_mail: Sprite<'a>,
+    mailbox: Sprite<'a>,
+    letter_1: Sprite<'a>,
+    letter_2: Sprite<'a>,
+    bone: Sprite<'a>,
+    pug: Sprite<'a>,
 
     game_time: f32,
 }
 
-impl GameRenderer {
+impl<'a> GameRenderer<'a> {
     pub fn new(midgar: &Midgar, tilesets: &Vec<Tileset>) -> Self {
         // Load textures.
         let tiles = load_tiles(tilesets, midgar);
@@ -43,31 +43,52 @@ impl GameRenderer {
         };
         let sneky_fox = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_fox.png", false));
-            TextureRegion::new(texture)
+            let mut sprite = Sprite::new(texture);
+            sprite.set_scale(Vector2::new(0.8, 0.8));
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(92.0 / size.x as f32, 80.0 / size.y as f32));
+            sprite
         };
         let sneky_fox_with_mail = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/sneky_fox_with_mail.png", false));
-            TextureRegion::new(texture)
+            let mut sprite = Sprite::new(texture);
+            sprite.set_scale(Vector2::new(0.8, 0.8));
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(92.0 / size.x as f32, 80.0 / size.y as f32));
+            sprite
         };
         let mailbox = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/mailbox.png", false));
-            TextureRegion::new(texture)
+            let mut sprite = Sprite::new(texture);
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(44.0 / size.x as f32, 79.0 / size.y as f32));
+            sprite
         };
         let letter_1 = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/letter_1.png", false));
-            TextureRegion::new(texture)
+            let mut sprite = Sprite::new(texture);
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(32.0 / size.x as f32, 47.0 / size.y as f32));
+            sprite
         };
         let letter_2 = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/letter_2.png", false));
-            TextureRegion::new(texture)
+            let mut sprite = Sprite::new(texture);
+            // TODO: If we use this, set its origin to be drawn nicely on the grid.
+            sprite
         };
         let bone = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/temp_bone.png", false));
-            TextureRegion::new(texture)
+            let mut sprite = Sprite::new(texture);
+            let size = sprite.size();
+            sprite
         };
         let pug = {
             let texture = Rc::new(midgar.graphics().load_texture("assets/textures/pug.png", false));
-            TextureRegion::new(texture)
+            let mut sprite = Sprite::new(texture);
+            let size = sprite.size();
+            sprite.set_origin(Vector2::new(62.0 / size.x as f32, 112.0 / size.y as f32));
+            sprite
         };
 
         let projection = cgmath::ortho(-(config::GAME_SIZE.x as f32 / 2.0), config::GAME_SIZE.x as f32 / 2.0,
@@ -160,23 +181,24 @@ impl GameRenderer {
             let pos = pug.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
             // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.sprite.draw(&self.pug.draw(draw_x, draw_y - 8.0),
-                             draw_params, target);
+            self.pug.set_position(Vector2::new(draw_x, draw_y - 8.0));
+            self.sprite.draw(&self.pug, draw_params, target);
         }
 
         // Draw mailbox.
         let pos = world.mailbox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
         // NOTE: Subtract 8 pixels to align to the center of the squares.
-        self.sprite.draw(&self.mailbox.draw(draw_x, draw_y - 8.0),
-                         draw_params, target);
+        self.mailbox.set_position(Vector2::new(draw_x, draw_y - 8.0));
+        self.sprite.draw(&self.mailbox, draw_params, target);
 
-        let bones = &world.bones;
-        for bone in bones.iter() {
+        // Draw bones.
+        for bone in &world.bones {
             let pos = bone.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-            self.sprite.draw(&self.bone.draw(draw_x, draw_y),
-                             draw_params, target);
+            // NOTE: Subtract 8 pixels to align to the center of the squares.
+            self.bone.set_position(Vector2::new(draw_x, draw_y - 8.0));
+            self.sprite.draw(&self.bone, draw_params, target);
         }
 
         // Draw mail
@@ -184,21 +206,21 @@ impl GameRenderer {
             let pos = world.mail.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
             // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.sprite.draw(&self.letter_1.draw(draw_x, draw_y - 8.0),
-                             draw_params, target);
+            self.letter_1.set_position(Vector2::new(draw_x, draw_y - 8.0));
+            self.sprite.draw(&self.letter_1, draw_params, target);
         }
 
         // Draw fox.
         let texture = if world.fox.has_mail {
-            &self.sneky_fox_with_mail
+            &mut self.sneky_fox_with_mail
         } else {
-            &self.sneky_fox
+            &mut self.sneky_fox
         };
         let pos = world.fox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
         // NOTE: Subtract 8 pixels to align to the center of the squares.
-        self.sprite.draw(&texture.draw(draw_x, draw_y - 8.0),
-                         draw_params, target);
+        texture.set_position(Vector2::new(draw_x, draw_y - 8.0));
+        self.sprite.draw(texture, draw_params, target);
     }
 
     fn draw_ui<S: Surface>(&mut self, _dt: f32, world: &GameWorld, target: &mut S) {
