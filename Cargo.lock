@@ -319,7 +319,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "midgar"
 version = "0.1.0"
-source = "git+https://github.com/mystal/midgar-engine?branch=jammin#c84964cfe0e9ab1a3d68516e3ff271ca88e6835d"
+source = "git+https://github.com/mystal/midgar-engine?branch=jammin#8587bb4eaf15a1c801555bdb6e13004c69105ab1"
 dependencies = [
  "cgmath 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glium 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
