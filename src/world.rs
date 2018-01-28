@@ -572,7 +572,9 @@ impl GameWorld {
             for pug in &mut self.pugs {
                 if new_pos == pug.pos {
                     pug.state = LiveState::Dead(0.0);
-                    // TODO: Play dank sound effect.
+                    if !self.sounds.lost_level.is_playing() {
+                        self.sounds.lost_level.play();
+                    }
                 }
             }
         }
