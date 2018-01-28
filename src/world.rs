@@ -51,7 +51,14 @@ impl Direction {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum LiveState {
+    Alive,
+    Dead(f32), // How long we've been dead for.
+}
+
 pub struct Fox {
+    pub state: LiveState,
     pub pos: Vector2<u32>,
     pub dir: Direction,
     pub has_mail: bool,
@@ -62,6 +69,7 @@ pub struct Fox {
 impl Fox {
     fn new(x: u32, y: u32, dir: Direction) -> Self {
         Fox {
+            state: LiveState::Alive,
             pos: Vector2::new(x, y),
             dir,
             has_mail: false,
@@ -72,6 +80,7 @@ impl Fox {
 }
 
 pub struct Pug {
+    pub state: LiveState,
     pub pos: Vector2<u32>,
     pub dir: Direction,
 }
@@ -79,6 +88,7 @@ pub struct Pug {
 impl Pug {
     fn new(x: u32, y: u32, dir: Direction) -> Self {
         Pug {
+            state: LiveState::Alive,
             pos: Vector2::new(x, y),
             dir,
         }
@@ -309,7 +319,6 @@ impl GameWorld {
     }
 
     fn load_fox(map: &tiled::Map) -> Option<Fox> {
-
         for object in &map.object_groups[0].objects {
             if object.obj_type == "sneky_fox" {
                 let x = object.x as u32 / (map.tile_width / 2);
@@ -390,7 +399,6 @@ impl GameWorld {
 
     fn update_over(&mut self, _midgar: &Midgar, dt: f32) {
         self.time += dt;
-
     }
 
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
@@ -459,13 +467,27 @@ impl GameWorld {
         }
 
         for pug in &mut self.pugs {
-            // This is weird but probably ok, maybe clamp on negative numbers?
-            if (pug.pos.cast::<i32>() + pug.dir.to_vector2()).cast::<u32>() == self.fox.pos {
-                pug.attack(self.fox.pos);
-                self.sounds.bark.play();
-                self.game_state = GameState::GameOver;
+            match pug.state {
+                LiveState::Alive => {
+                    // Try to attack the fox if it's in sight!
+                    // This is weird but probably ok, maybe clamp on negative numbers?
+                    if (pug.pos.cast::<i32>() + pug.dir.to_vector2()).cast::<u32>() == self.fox.pos {
+                        pug.attack(self.fox.pos);
+                        self.sounds.bark.play();
+                        self.game_state = GameState::GameOver;
+                        // Reset this timer to make the fox falling animation look good.
+                        self.time = 0.0;
+                    }
+                }
+                LiveState::Dead(ref mut dead_time) => *dead_time += dt,
             }
         }
+
+        // Remove pugs dead for more than a second.
+        self.pugs.retain(|pug| match pug.state {
+            LiveState::Dead(dead_time) if dead_time >= 1.0 => false,
+            _ => true,
+        });
 
         // Check if fox grabbed mail
         if !self.fox.has_mail && self.fox.pos == self.mail.pos {
@@ -529,6 +551,14 @@ impl GameWorld {
             self.fox.pos = new_pos;
             self.fox.dir = Direction::from_vector2(fox_delta)
                 .expect(&format!("Unexpected fox delta {:?}", fox_delta));
+
+            // Kill any pugs.
+            for pug in &mut self.pugs {
+                if new_pos == pug.pos {
+                    pug.state = LiveState::Dead(0.0);
+                    // TODO: Play dank sound effect.
+                }
+            }
         }
     }
 }

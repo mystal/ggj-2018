@@ -221,7 +221,7 @@ impl<'a> GameRenderer<'a> {
         self.sprite.draw(texture, draw_params, target);
     }
 
-
+    // TODO: Merge draw_dead_fox and draw_fox.
     fn draw_fox<S: Surface>(&mut self, world: &GameWorld, target: &mut S, draw_params: SpriteDrawParams) {
         let tile_width = world.level.map.tile_width as f32;
         let tile_height = world.level.map.tile_height as f32;
@@ -299,11 +299,16 @@ impl<'a> GameRenderer<'a> {
 
         for pug in &world.pugs {
             let flip_x = pug.dir == Direction::East || pug.dir == Direction::North;
-            self.pug.set_flip_x(flip_x);
             let pos = pug.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
+            let (flip_y, dead_offset) = match pug.state {
+                LiveState::Dead(dead_time) => (true, dead_time * config::FALL_SPEED),
+                _ => (false, 0.0),
+            };
+            self.pug.set_flip_x(flip_x);
+            self.pug.set_flip_y(flip_y);
             // NOTE: Subtract 8 pixels to align to the center of the squares.
-            self.pug.set_position(Vector2::new(draw_x, draw_y - 8.0));
+            self.pug.set_position(Vector2::new(draw_x, draw_y - 8.0 + dead_offset));
             self.sprite.draw(&self.pug, draw_params, target);
         }
     }
