@@ -39,6 +39,10 @@ impl Pug {
         }
     }
 
+    fn attack(&mut self, fox_pos: Vector2<u32>) {
+        self.pos = fox_pos;
+    }
+
     fn facing_to_dir(facing: &str) -> Vector2<isize> {
         match facing {
             "south" => Vector2::new(0, 1),
@@ -346,7 +350,14 @@ impl GameWorld {
 
         self.try_move_fox(dx, dy);
 
-        // TODO: iterate through pugs and see if fox is in the square they are pointing to
+        for pug in &mut self.pugs {
+            // This is weird but probably ok, maybe clamp on negative numbers?
+            if (pug.pos.cast::<isize>() + pug.dir).cast::<u32>() == self.fox.pos {
+                pug.attack(self.fox.pos);
+                self.sounds.bark.play();
+                self.game_state = GameState::GameOver;
+            }
+        }
 
         if !self.fox.has_mail && self.fox.pos == self.mail.pos {
             self.sounds.got_mail.play();
