@@ -44,8 +44,7 @@ impl<'a> GameRenderer<'a> {
             TextureRegion::new(texture)
         };
         let instructions = {
-            // TODO: Replace with the new texture.
-            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/background.png", false));
+            let texture = Rc::new(midgar.graphics().load_texture("assets/textures/instructions_background.png", false));
             TextureRegion::new(texture)
         };
         let title = {
