@@ -9,15 +9,6 @@
    <image width="182" height="106" source="../../textures/tile_dirt.png"/>
   </tile>
  </tileset>
- <tileset firstgid="3" name="sneky_tiles" tilewidth="182" tileheight="106" tilecount="2" columns="0">
-  <grid orientation="orthogonal" width="1" height="1"/>
-  <tile id="0">
-   <image width="182" height="106" source="../../textures/tile_grass.png"/>
-  </tile>
-  <tile id="1">
-   <image width="182" height="106" source="../../textures/tile_dirt.png"/>
-  </tile>
- </tileset>
  <layer name="Tile Layer 1" width="4" height="4">
   <data encoding="csv">
 0,1,1,1,
