@@ -164,9 +164,14 @@ impl GameRenderer {
         }
 
         // Draw fox.
+        let texture = if world.fox.has_mail {
+            &self.sneky_fox_with_mail
+        } else {
+            &self.sneky_fox
+        };
         let pos = world.fox.pos;
         let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-        self.sprite.draw(&self.sneky_fox.draw(draw_x, draw_y),
+        self.sprite.draw(&texture.draw(draw_x, draw_y),
                          draw_params, target);
     }
 
