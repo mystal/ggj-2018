@@ -662,7 +662,7 @@ impl GameWorld {
                             if fox_has_moved {
                                 pug.attack(alert_pos);
 
-                                if (alert_pos == bone_pos) {
+                                if alert_pos == bone_pos {
                                     pug.set_guarding();
                                 } else {
                                     pug.set_alerted(bone_pos, bone_pos);

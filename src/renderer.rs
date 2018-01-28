@@ -293,8 +293,7 @@ impl<'a> GameRenderer<'a> {
         let tile_width = world.level.map.tile_width as f32;
         let tile_height = world.level.map.tile_height as f32;
 
-        let bones = &world.bones;
-        for bone in bones.iter() {
+        for bone in &world.bones {
             if bone.is_visible() {
                 if bone.is_selected() {
                     // Draw locations where fox can throw bone
