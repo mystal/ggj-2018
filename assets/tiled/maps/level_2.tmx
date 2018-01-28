@@ -23,7 +23,7 @@
   <object id="3" name="Mail" type="mail" x="0" y="90" width="90" height="90"/>
   <object id="4" name="Pug" type="pug" x="90" y="0" width="90" height="90">
    <properties>
-    <property name="facing" value="south"/>
+    <property name="facing" value="east"/>
    </properties>
   </object>
   <object id="5" name="Mailbox" type="mailbox" x="180" y="0" width="90" height="90"/>
