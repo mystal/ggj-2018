@@ -1,3 +1,4 @@
+use clap::{Arg, App};
 use midgar::{self, KeyCode, Midgar};
 
 use config;
@@ -13,7 +14,14 @@ pub struct GameApp {
 
 impl midgar::App for GameApp {
     fn create(midgar: &Midgar) -> Self {
-        let world = GameWorld::new("level_4", config::ASSETS_PATH);
+        // Parse args.
+        let matches = App::new("Sneky Fox")
+            .arg(Arg::with_name("LEVEL")
+                 .index(1))
+            .get_matches();
+
+        let level = matches.value_of("LEVEL").unwrap_or(config::START_LEVEL.into());
+        let world = GameWorld::new(&level, config::ASSETS_PATH);
         let renderer = GameRenderer::new(midgar, &world.level.map.tilesets);
         let mut sounds = Sounds::new();
 

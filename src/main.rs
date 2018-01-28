@@ -1,4 +1,5 @@
 extern crate cgmath;
+extern crate clap;
 extern crate midgar;
 extern crate rand;
 #[macro_use]
