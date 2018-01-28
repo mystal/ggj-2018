@@ -303,6 +303,11 @@ impl<'a> GameRenderer<'a> {
 
         match world.game_state {
             GameState::GameOver => {
+                // FIXME: Why does this text render weird???
+                self.text.draw_text("The Pugs win again... Press Enter to retry.", &self.font, [0.0, 0.0, 0.0],
+                                    70, 82.0, 62.0, 900, &self.ui_projection, target);
+                self.text.draw_text("The Pugs win again... Press Enter to retry.", &self.font, [1.0, 1.0, 1.0],
+                                    70, 80.0, 60.0, 900, &self.ui_projection, target);
             }
             GameState::Won => {
                 self.text.draw_text("Mail delivered! Press Enter to proceed!", &self.font, [0.0, 0.0, 0.0],

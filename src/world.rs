@@ -171,12 +171,14 @@ impl Bone {
 
 pub struct Level {
     pub map: tiled::Map,
+    pub level_name: String,
 }
 
 impl Level {
-    fn new(map: tiled::Map) -> Self {
+    fn new(map: tiled::Map, level_name: String) -> Self {
         Level {
             map,
+            level_name,
         }
     }
 
@@ -285,15 +287,7 @@ pub struct GameWorld {
 
 impl GameWorld {
     pub fn new(map_name: &str, assets_path: &str) -> Self {
-        let map = GameWorld::load_map(map_name, assets_path);
-        let fox = GameWorld::load_fox(&map)
-            .expect(&format!("Could not load \"sneky_fox\" from map {}", map_name));
-        let mailbox = GameWorld::load_mailbox(&map)
-            .expect(&format!("Could not load \"mailbox\" from map {}", map_name));
-        let mail = GameWorld::load_mail(&map)
-            .expect(&format!("Could not load \"mail\" from map {}", map_name));
-        let pugs = GameWorld::load_pugs(&map);
-        let bones = GameWorld::load_bones(&map);
+        let (level, fox, mailbox, mail, pugs, bones) = GameWorld::load_level(map_name, assets_path);
 
         GameWorld {
             game_state: GameState::Running,
@@ -302,12 +296,27 @@ impl GameWorld {
             mail,
             pugs,
             bones,
-            level: Level::new(map),
+            level,
             sounds: Sounds::new(),
             time: 0.0,
 
             assets_path: assets_path.into(),
         }
+    }
+
+    fn load_level(level_name: &str, assets_path: &str) -> (Level, Fox, Mailbox, Mail, Vec<Pug>, Vec<Bone>) {
+        let map = GameWorld::load_map(level_name, assets_path);
+        let fox = GameWorld::load_fox(&map)
+            .expect(&format!("Could not load \"sneky_fox\" from map {}", level_name));
+        let mailbox = GameWorld::load_mailbox(&map)
+            .expect(&format!("Could not load \"mailbox\" from map {}", level_name));
+        let mail = GameWorld::load_mail(&map)
+            .expect(&format!("Could not load \"mail\" from map {}", level_name));
+        let pugs = GameWorld::load_pugs(&map);
+        let bones = GameWorld::load_bones(&map);
+        let level = Level::new(map, level_name.into());
+
+        (level, fox, mailbox, mail, pugs, bones)
     }
 
     fn load_map(map_name: &str, assets_path: &str) -> tiled::Map {
@@ -397,8 +406,21 @@ impl GameWorld {
         }
     }
 
-    fn update_over(&mut self, _midgar: &Midgar, dt: f32) {
-        if let LiveState::Dead(ref mut dead_time) = self.fox.state {
+    fn update_over(&mut self, midgar: &Midgar, dt: f32) {
+        // Restart the level if Enter is pressed.
+        if midgar.input().was_key_pressed(KeyCode::Return) {
+            let (level, fox, mailbox, mail, pugs, bones) =
+                GameWorld::load_level(&self.level.level_name, &self.assets_path);
+
+            // TODO: Look into incremental update of self?
+            self.game_state = GameState::Running;
+            self.fox = fox;
+            self.mailbox = mailbox;
+            self.level = level;
+            self.mail = mail;
+            self.pugs = pugs;
+            self.bones = bones;
+        } else if let LiveState::Dead(ref mut dead_time) = self.fox.state {
             *dead_time += dt;
         }
     }
@@ -509,28 +531,19 @@ impl GameWorld {
         // Move to the next level if Enter is pressed.
         if midgar.input().was_key_pressed(KeyCode::Return) {
             // Check if there's a level to load, otherwise reload the start stage.
-            let (map, fox, mailbox, mail, pugs, bones) = {
+            let (level, fox, mailbox, mail, pugs, bones) = {
                 let next_level = match self.level.map.properties.get("next_level") {
                     Some(&PropertyValue::StringValue(ref next_level)) => next_level,
                     _ => config::START_LEVEL,
                 };
-                let map = GameWorld::load_map(next_level, &self.assets_path);
-                let fox = GameWorld::load_fox(&map)
-                    .expect(&format!("Could not load \"sneky_fox\" from map {}", next_level));
-                let mailbox = GameWorld::load_mailbox(&map)
-                    .expect(&format!("Could not load \"mailbox\" from map {}", next_level));
-                let mail = GameWorld::load_mail(&map)
-                    .expect(&format!("Could not load \"mail\" from map {}", next_level));
-                let pugs = GameWorld::load_pugs(&map);
-                let bones = GameWorld::load_bones(&map);
-                (map, fox, mailbox, mail, pugs, bones)
+                GameWorld::load_level(next_level, &self.assets_path)
             };
 
             // TODO: Look into incremental update of self?
             self.game_state = GameState::Running;
             self.fox = fox;
             self.mailbox = mailbox;
-            self.level = Level::new(map);
+            self.level = level;
             self.mail = mail;
             self.pugs = pugs;
             self.bones = bones;
