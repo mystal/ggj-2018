@@ -80,7 +80,7 @@ impl Fox {
 pub enum PugState {
     Guarding,
     Suprised(Vector2<u32>),
-    Alerted(Vector2<u32>),
+    Alerted(Vector2<u32>, Vector2<u32>),
 }
 
 pub struct Pug {
@@ -108,8 +108,8 @@ impl Pug {
         self.state = PugState::Guarding;
     }
 
-    fn set_alerted(&mut self, alert_pos: Vector2<u32>) {
-        self.state = PugState::Alerted(alert_pos);
+    fn set_alerted(&mut self, next_pos: Vector2<u32>, bone_pos: Vector2<u32>) {
+        self.state = PugState::Alerted(next_pos, bone_pos);
     }
 
     fn set_suprised(&mut self, bone_pos: Vector2<u32>) {
@@ -132,7 +132,7 @@ impl Pug {
     }
 
     fn is_alerted(&self) -> bool {
-        if let PugState::Alerted(_) = self.state {
+        if let PugState::Alerted(_, _) = self.state {
             return true;
         }
         false
@@ -140,7 +140,7 @@ impl Pug {
 
     fn get_alerted_pos(&self) -> Option<Vector2<u32>> {
         match self.state {
-            PugState::Alerted(pos) => Some(pos),
+            PugState::Alerted(pos, _) => Some(pos),
             _ => None,
         }
     }
@@ -634,9 +634,9 @@ impl GameWorld {
                             let watched = pug.get_watched_pos();
 
                             if watched == sup_pos {
-                                pug.set_alerted(watched);
+                                pug.set_alerted(watched, sup_pos);
                             } else if four.iter().find(|&&x| x == watched).is_some() {
-                                pug.set_alerted(watched);
+                                pug.set_alerted(watched, sup_pos);
                             } else {
                                 let mut has_alerted = false;
                                 let pug_four = self.level.get_adjacent_four(pug.pos);
@@ -645,7 +645,7 @@ impl GameWorld {
                                         match four.iter().find(|&&x| x == pug_adj) {
                                             Some(pos) => {
                                                 has_alerted = true;
-                                                pug.set_alerted(*pos);
+                                                pug.set_alerted(*pos, sup_pos);
                                                 pug.set_facing(*pos);
                                             },
                                             None => {},
@@ -658,10 +658,15 @@ impl GameWorld {
                                 }
                             }
                         },
-                        PugState::Alerted(alert_pos) => {
+                        PugState::Alerted(alert_pos, bone_pos) => {
                             if fox_has_moved {
                                 pug.attack(alert_pos);
-                                pug.set_guarding();
+
+                                if (alert_pos == bone_pos) {
+                                    pug.set_guarding();
+                                } else {
+                                    pug.set_alerted(bone_pos, bone_pos);
+                                }
 
                                 if alert_pos == self.fox.pos {
                                     self.sounds.bark.play();
