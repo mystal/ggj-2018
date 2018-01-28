@@ -118,7 +118,7 @@ impl GameRenderer {
 
     fn draw_world<S: Surface>(&mut self, dt: f32, world: &GameWorld, target: &mut S) {
         let draw_params = SpriteDrawParams::new()
-            .magnify_filter(MagnifySamplerFilter::Nearest)
+            .magnify_filter(MagnifySamplerFilter::Linear)
             .alpha(true);
 
         // Draw background.
