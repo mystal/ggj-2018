@@ -10,7 +10,7 @@ pub struct Sounds {
 
 impl Sounds {
     pub fn new() -> Self {
-        let mut background_music = Music::new("assets/sounds/background_music_loop.wav").expect("Error on loading background_music_loop.");
+        let mut background_music = Music::new("assets/sounds/background_music_loop.ogg").expect("Error on loading background_music_loop.");
         background_music.set_looping(true);
         let won_level = Sound::new("assets/sounds/won_level.wav").expect("Error on loading won_level.");
         let got_mail = Sound::new("assets/sounds/got_mail.wav").expect("Error on loading got_mail.");
