@@ -116,44 +116,17 @@ impl Pug {
         self.state = PugState::Suprised(bone_pos);
     }
 
-    fn get_watched_pos(&self) -> Vector2<u32> {
-        (self.pos.cast::<i32>() + self.dir.to_vector2()).cast::<u32>()
-    }
+    fn get_watched_pos(&self) -> Option<Vector2<u32>> {
+        let v = self.pos.cast::<i32>() + self.dir.to_vector2();
 
-    fn is_guarding(&self) -> bool {
-        self.state == PugState::Guarding
-    }
-
-    fn is_suprised(&self) -> bool {
-        if let PugState::Suprised(_) = self.state {
-            return true;
-        }
-        false
-    }
-
-    fn is_alerted(&self) -> bool {
-        if let PugState::Alerted(_, _) = self.state {
-            return true;
-        }
-        false
-    }
-
-    fn get_alerted_pos(&self) -> Option<Vector2<u32>> {
-        match self.state {
-            PugState::Alerted(pos, _) => Some(pos),
-            _ => None,
-        }
-    }
-
-    fn get_suprised_pos(&self) -> Option<Vector2<u32>> {
-        match self.state {
-            PugState::Suprised(pos) => Some(pos),
-            _ => None,
-        }
+        if v.x < 0 || v.y < 0 {
+            return None
+        } 
+        Some(v.cast::<u32>())
     }
 
     fn set_facing(&mut self, new_pos: Vector2<u32>) {
-        let mut facing = self.pos.cast::<i32>() - new_pos.cast::<i32>();
+        let mut facing = new_pos.cast::<i32>() - self.pos.cast::<i32>();
         if facing.x < 0 {
             facing.x = -1
         } else if facing.x > 0 {
@@ -622,56 +595,63 @@ impl GameWorld {
                     match pug.state {
                         // If the pug is guarding, only move when it sees a fox
                         PugState::Guarding => {
-                            if pug.get_watched_pos() == self.fox.pos {
-                                pug.attack(self.fox.pos);
-                                self.sounds.bark.play();
-                                self.fox.state = LiveState::Dead(0.0);
-                                self.game_state = GameState::GameOver;
-                            }
-                        },
-                        PugState::Suprised(sup_pos) => {
-                            let four = self.level.get_adjacent_four(sup_pos);
-                            let watched = pug.get_watched_pos();
-
-                            if watched == sup_pos {
-                                pug.set_alerted(watched, sup_pos);
-                            } else if four.iter().find(|&&x| x == watched).is_some() {
-                                pug.set_alerted(watched, sup_pos);
-                            } else {
-                                let mut has_alerted = false;
-                                let pug_four = self.level.get_adjacent_four(pug.pos);
-                                for pug_adj in pug_four {
-                                    if !has_alerted {
-                                        match four.iter().find(|&&x| x == pug_adj) {
-                                            Some(pos) => {
-                                                has_alerted = true;
-                                                pug.set_alerted(*pos, sup_pos);
-                                                pug.set_facing(*pos);
-                                            },
-                                            None => {},
-                                        }
+                            if fox_has_moved{
+                                if let Some(watched_pos) = pug.get_watched_pos() {
+                                    if watched_pos == self.fox.pos {
+                                        pug.attack(self.fox.pos);
+                                        self.sounds.bark.play();
+                                        self.fox.state = LiveState::Dead(0.0);
+                                        self.game_state = GameState::GameOver;
                                     }
                                 }
-                                if !has_alerted {
-                                    println!("We can't alert anywhere!?");
-                                    pug.set_guarding();
+                            }
+                        },
+                        PugState::Suprised(bone_pos) => {
+                            let mut bone_four = self.level.get_adjacent_four(bone_pos);
+                            bone_four.push(bone_pos);
+                            if let Some(watched) = pug.get_watched_pos() {
+                                if watched == bone_pos {
+                                    pug.set_alerted(watched, bone_pos);
+                                } else if bone_four.iter().find(|&&x| x == watched).is_some() {
+                                    pug.set_alerted(watched, bone_pos);
+                                } else {
+                                    let mut has_alerted = false;
+                                    let pug_four = self.level.get_adjacent_four(pug.pos);
+                                    for pug_adj in pug_four {
+                                        if !has_alerted {
+                                            match bone_four.iter().find(|&&x| x == pug_adj) {
+                                                Some(pos) => {
+                                                    has_alerted = true;
+                                                    pug.set_alerted(*pos, bone_pos);
+                                                    pug.set_facing(*pos);
+                                                },
+                                                None => {},
+                                            }
+                                        }
+                                    }
+                                    if !has_alerted {                                    
+                                        pug.set_guarding();
+                                    }
                                 }
                             }
                         },
                         PugState::Alerted(alert_pos, bone_pos) => {
                             if fox_has_moved {
-                                pug.attack(alert_pos);
+                                pug.set_facing(alert_pos);
+                                if fox_has_moved {
+                                    pug.attack(alert_pos);
 
-                                if alert_pos == bone_pos {
-                                    pug.set_guarding();
-                                } else {
-                                    pug.set_alerted(bone_pos, bone_pos);
-                                }
+                                    if alert_pos == bone_pos {
+                                        pug.set_guarding();
+                                    } else {
+                                        pug.set_alerted(bone_pos, bone_pos);
+                                    }
 
-                                if alert_pos == self.fox.pos {
-                                    self.sounds.bark.play();
-                                    self.fox.state = LiveState::Dead(0.0);
-                                    self.game_state = GameState::GameOver;
+                                    if alert_pos == self.fox.pos {
+                                        self.sounds.bark.play();
+                                        self.fox.state = LiveState::Dead(0.0);
+                                        self.game_state = GameState::GameOver;
+                                    }
                                 }
                             }
                         },
