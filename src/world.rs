@@ -77,7 +77,7 @@ impl Fox {
 }
 
 pub struct Pug {
-    pub state: LiveState,
+    pub live_state: LiveState,
     pub pos: Vector2<u32>,
     pub dir: Direction,
 }
@@ -85,7 +85,7 @@ pub struct Pug {
 impl Pug {
     fn new(x: u32, y: u32, dir: Direction) -> Self {
         Pug {
-            state: LiveState::Alive,
+            live_state: LiveState::Alive,
             pos: Vector2::new(x, y),
             dir,
         }
@@ -494,7 +494,7 @@ impl GameWorld {
         }
 
         for pug in &mut self.pugs {
-            match pug.state {
+            match pug.live_state {
                 LiveState::Alive => {
                     // Try to attack the fox if it's in sight!
                     // This is weird but probably ok, maybe clamp on negative numbers?
@@ -512,7 +512,7 @@ impl GameWorld {
         }
 
         // Remove pugs dead for more than a second.
-        self.pugs.retain(|pug| match pug.state {
+        self.pugs.retain(|pug| match pug.live_state {
             LiveState::Dead(dead_time) if dead_time >= 1.0 => false,
             _ => true,
         });
@@ -573,8 +573,8 @@ impl GameWorld {
 
             // Kill any pugs.
             for pug in &mut self.pugs {
-                if new_pos == pug.pos && pug.state == LiveState::Alive {
-                    pug.state = LiveState::Dead(0.0);
+                if new_pos == pug.pos && pug.live_state == LiveState::Alive {
+                    pug.live_state = LiveState::Dead(0.0);
                     if !self.sounds.lost_level.is_playing() {
                         self.sounds.lost_level.play();
                     }

@@ -330,7 +330,7 @@ impl<'a> GameRenderer<'a> {
             let flip_x = pug.dir == Direction::East || pug.dir == Direction::North;
             let pos = pug.pos;
             let (draw_x, draw_y) = grid_to_isometric(pos.x, pos.y, tile_width, tile_height);
-            let (flip_y, dead_offset) = match pug.state {
+            let (flip_y, dead_offset) = match pug.live_state {
                 LiveState::Dead(dead_time) => (true, dead_time * config::FALL_SPEED),
                 _ => (false, 0.0),
             };
