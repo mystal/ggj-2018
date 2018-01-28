@@ -9,5 +9,5 @@ pub const GAME_SIZE: Vector2<u32> = Vector2 {
     y: 768,
 };
 pub const ASSETS_PATH: &str = "assets";
-pub const START_LEVEL: &str = "level_1";
+pub const START_LEVEL: &str = "mockup";
 pub const FALL_SPEED: f32 = 500.0;
