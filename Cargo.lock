@@ -185,18 +185,6 @@ version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "ggj-2018"
-version = "0.1.0"
-dependencies = [
- "cgmath 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "clap 2.29.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "ears 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "midgar 0.1.0 (git+https://github.com/mystal/midgar-engine?branch=jammin)",
- "rand 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
- "tiled 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "gif"
 version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -504,6 +492,18 @@ dependencies = [
 name = "smallvec"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "sneky-fox"
+version = "0.1.0"
+dependencies = [
+ "cgmath 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clap 2.29.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ears 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "midgar 0.1.0 (git+https://github.com/mystal/midgar-engine?branch=jammin)",
+ "rand 0.3.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tiled 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "stb_truetype"

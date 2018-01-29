@@ -530,10 +530,10 @@ impl GameWorld {
     fn update_running(&mut self, midgar: &Midgar, dt: f32) {
         let mut dx = 0;
         let mut dy = 0;
-        match (midgar.input().was_key_pressed(KeyCode::Left),
-            (midgar.input().was_key_pressed(KeyCode::Right)),
-            (midgar.input().was_key_pressed(KeyCode::Up)),
-            (midgar.input().was_key_pressed(KeyCode::Down))) {
+        match (midgar.input().was_key_pressed(KeyCode::Left) || midgar.input().was_key_pressed(KeyCode::A),
+            (midgar.input().was_key_pressed(KeyCode::Right) || midgar.input().was_key_pressed(KeyCode::D)),
+            (midgar.input().was_key_pressed(KeyCode::Up) || midgar.input().was_key_pressed(KeyCode::W)),
+            (midgar.input().was_key_pressed(KeyCode::Down) || midgar.input().was_key_pressed(KeyCode::S))) {
             (true, false, false, false) => {
                 dx = -1
             },
