@@ -41,7 +41,7 @@ pub struct GameRenderer<'a> {
 }
 
 impl<'a> GameRenderer<'a> {
-    pub fn new(midgar: &Midgar, tilesets: &Vec<Tileset>) -> Self {
+    pub fn new(midgar: &Midgar, tilesets: &[Tileset]) -> Self {
         // Load textures.
         let tiles = load_tiles(tilesets, midgar);
         let background = {
@@ -238,6 +238,10 @@ impl<'a> GameRenderer<'a> {
         // Draw tiles.
         self.draw_tiles(world, target, draw_params);
 
+        // TODO: Collect game objects in draw-order.
+
+        // TODO: Draw object shadows top-down, left-right in the iso view.
+
         // TODO: Draw game objects top-down, left-right in the iso view.
         self.draw_pugs(world, target, draw_params);
         self.draw_mailbox(world, target, draw_params);
@@ -432,14 +436,14 @@ impl<'a> GameRenderer<'a> {
     }
 }
 
-fn load_tiles(tilesets: &Vec<Tileset>, midgar: &Midgar) -> Vec<TextureRegion> {
+fn load_tiles(tilesets: &[Tileset], midgar: &Midgar) -> Vec<TextureRegion> {
     let mut tiles = Vec::new();
 
     for tileset in tilesets {
         // TODO: Take into account tile IDs.
         //let mut next_gid = tileset.first_gid;
         for tile in &tileset.tiles {
-            let path = format!("assets/tiled/maps/") + &tile.images[0].source;
+            let path = format!("assets/tiled/maps/{}", &tile.images[0].source);
             let texture = Rc::new(midgar.graphics().load_texture(path, false));
 
             // Iterate over tile sizes and create new Tiles.

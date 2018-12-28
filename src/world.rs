@@ -28,7 +28,7 @@ impl Direction {
         }
     }
 
-    fn from_vector2(dir_vec: Vector2<i32>) -> Option<Self> {
+    fn from_vector2(dir_vec: &Vector2<i32>) -> Option<Self> {
         match (dir_vec.x, dir_vec.y) {
             (0, -1) => Some(Direction::North),
             (0, 1) => Some(Direction::South),
@@ -38,8 +38,8 @@ impl Direction {
         }
     }
 
-    fn to_vector2(&self) -> Vector2<i32> {
-        match *self {
+    fn to_vector2(self) -> Vector2<i32> {
+        match self {
             Direction::North => Vector2::new(0, -1),
             Direction::South => Vector2::new(0, 1),
             Direction::East => Vector2::new(1, 0),
@@ -95,7 +95,7 @@ impl Pug {
         Pug {
             live_state: LiveState::Alive,
             pos: Vector2::new(x, y),
-            dir: dir,
+            dir,
             state: PugState::Guarding
         }
     }
@@ -121,7 +121,7 @@ impl Pug {
 
         if v.x < 0 || v.y < 0 {
             return None
-        } 
+        }
         Some(v.cast::<u32>())
     }
 
@@ -139,7 +139,8 @@ impl Pug {
             facing.y = 1
         }
 
-        let dir = Direction::from_vector2(facing).expect("Set facing should be successful");
+        let dir = Direction::from_vector2(&facing)
+            .expect("Set facing should be successful");
         self.dir = dir;
     }
 }
@@ -410,9 +411,8 @@ impl GameWorld {
     fn load_map(map_name: &str, assets_path: &str) -> tiled::Map {
         let map_str = format!("{}/tiled/maps/{}.tmx", assets_path, map_name);
         let map_path = Path::new(&map_str);
-        let map = tiled::parse_file(map_path)
-            .expect(&format!("Could nor parse map file: {}", map_str));
-        map
+        tiled::parse_file(map_path)
+            .expect(&format!("Could nor parse map file: {}", map_str))
     }
 
     fn load_fox(map: &tiled::Map) -> Option<Fox> {
@@ -492,7 +492,6 @@ impl GameWorld {
             GameState::Running => self.update_running(midgar, dt),
             GameState::GameOver => self.update_over(midgar, dt),
             GameState::Won => self.update_won(midgar, dt),
-            _ => {}
         }
     }
 
@@ -581,11 +580,9 @@ impl GameWorld {
                 }
 
                 // Make fox grab bone
-                if self.fox.pos == bone.pos {
-                    if !bone.is_used {
-                        fox_has_bone = true;
-                        bone.is_selected = true;
-                    }
+                if !bone.is_used && self.fox.pos == bone.pos {
+                    fox_has_bone = true;
+                    bone.is_selected = true;
                 }
             }
         }
@@ -617,26 +614,19 @@ impl GameWorld {
                             let mut bone_four = self.level.get_adjacent_four(bone_pos);
                             bone_four.push(bone_pos);
                             if let Some(watched) = pug.get_watched_pos() {
-                                if watched == bone_pos {
-                                    pug.set_alerted(watched, bone_pos);
-                                } else if bone_four.iter().find(|&&x| x == watched).is_some() {
+                                if bone_four.contains(&watched) {
                                     pug.set_alerted(watched, bone_pos);
                                 } else {
                                     let mut has_alerted = false;
                                     let pug_four = self.level.get_adjacent_four(pug.pos);
                                     for pug_adj in pug_four {
-                                        if !has_alerted {
-                                            match bone_four.iter().find(|&&x| x == pug_adj) {
-                                                Some(pos) => {
-                                                    has_alerted = true;
-                                                    pug.set_alerted(*pos, bone_pos);
-                                                    pug.set_facing(*pos);
-                                                },
-                                                None => {},
-                                            }
+                                        if !has_alerted && bone_four.contains(&pug_adj) {
+                                            has_alerted = true;
+                                            pug.set_alerted(pug_adj, bone_pos);
+                                            pug.set_facing(pug_adj);
                                         }
                                     }
-                                    if !has_alerted {                                    
+                                    if !has_alerted {
                                         pug.set_guarding();
                                     }
                                 }
@@ -714,7 +704,7 @@ impl GameWorld {
         }
     }
 
-    fn try_move_fox(&mut self, dx: i32, dy: i32) -> bool{
+    fn try_move_fox(&mut self, dx: i32, dy: i32) -> bool {
         // Don't try to move if we're not moving!
         if dx == 0 && dy == 0 {
             return false;
@@ -729,7 +719,7 @@ impl GameWorld {
             self.fox.move_sound.play();
             let fox_delta = Vector2::new(dx, dy);
             self.fox.pos = new_pos;
-            self.fox.dir = Direction::from_vector2(fox_delta)
+            self.fox.dir = Direction::from_vector2(&fox_delta)
                 .expect(&format!("Unexpected fox delta {:?}", fox_delta));
 
             // Kill any pugs.
@@ -743,6 +733,6 @@ impl GameWorld {
             }
             return true;
         }
-        return false;
+        false
     }
 }
