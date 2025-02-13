@@ -1,5 +1,7 @@
 # SNEKY FOX
 
+NOTE: This is a branch to port the game to Godot. Very WIP!
+
 Deliver Mail, Avoid Pugs!
 
 ## Instructions
