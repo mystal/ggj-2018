@@ -1,3 +1,19 @@
-[gd_scene format=3 uid="uid://brf7jrw37s4t6"]
+[gd_scene load_steps=4 format=4 uid="uid://brf7jrw37s4t6"]
+
+[ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="1_dkx27"]
+[ext_resource type="Script" path="res://levels/level.gd" id="1_pbmp5"]
+[ext_resource type="TileSet" uid="uid://d2rnlhlproojv" path="res://levels/tiles/level_tile_set.tres" id="3_xnuki"]
 
 [node name="MockupLevel" type="Node2D"]
+script = ExtResource("1_pbmp5")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("1_dkx27")
+centered = false
+
+[node name="TileMap" type="Node2D" parent="."]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="TileMap"]
+y_sort_enabled = true
+tile_map_data = PackedByteArray("AAAGAAAAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAEAAAAAAAAAAAA=")
+tile_set = ExtResource("3_xnuki")

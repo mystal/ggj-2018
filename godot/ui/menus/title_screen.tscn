@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://p5bae6436kyd"]
+[gd_scene load_steps=8 format=3 uid="uid://p5bae6436kyd"]
 
+[ext_resource type="Script" path="res://ui/menus/title_screen.gd" id="1_711mm"]
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="1_b5thc"]
 [ext_resource type="Texture2D" uid="uid://cx8lnm4hrakvq" path="res://ui/menus/title.png" id="2_jt6wx"]
 [ext_resource type="FontFile" uid="uid://k72rx04hamun" path="res://ui/fonts/Indie_Flower/IndieFlower.ttf" id="3_exsv4"]
@@ -49,6 +50,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_711mm")
 
 [node name="Background" type="Sprite2D" parent="."]
 texture = ExtResource("1_b5thc")
