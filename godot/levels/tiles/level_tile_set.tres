@@ -7,11 +7,13 @@
 texture = ExtResource("1_u1ay6")
 texture_region_size = Vector2i(182, 106)
 0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, -7)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jhuk4"]
 texture = ExtResource("2_f180g")
 texture_region_size = Vector2i(182, 106)
 0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, -7)
 
 [resource]
 tile_shape = 1

@@ -1,0 +1,23 @@
+[gd_scene load_steps=7 format=3 uid="uid://bnptf7dds53gt"]
+
+[ext_resource type="Script" path="res://entities/player/player.gd" id="1_ag812"]
+[ext_resource type="Texture2D" uid="uid://4qrd5njmags8" path="res://entities/shared/shadow.png" id="1_kq3yy"]
+[ext_resource type="Texture2D" uid="uid://cp5fg1odhutrr" path="res://entities/player/sneky_front.png" id="1_qikv6"]
+[ext_resource type="Texture2D" uid="uid://bfoeqdrmpy5ui" path="res://entities/player/sneky_back.png" id="3_kvxpt"]
+[ext_resource type="Texture2D" uid="uid://bj52kk64svsbn" path="res://entities/player/sneky_front_with_mail.png" id="4_vm8f3"]
+[ext_resource type="Texture2D" uid="uid://dox3g4424bdur" path="res://entities/player/sneky_back_with_mail.png" id="5_cadrd"]
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_ag812")
+FRONT_SPRITE = ExtResource("1_qikv6")
+BACK_SPRITE = ExtResource("3_kvxpt")
+MAIL_FRONT_SPRITE = ExtResource("4_vm8f3")
+MAIL_BACK_SPRITE = ExtResource("5_cadrd")
+
+[node name="ShadowSprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_kq3yy")
+
+[node name="FoxSprite" type="Sprite2D" parent="."]
+position = Vector2(12, -40)
+texture = ExtResource("1_qikv6")
+flip_h = true
