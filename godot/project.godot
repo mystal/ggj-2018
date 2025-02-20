@@ -26,6 +26,10 @@ window/size/viewport_width=1024
 window/size/viewport_height=768
 window/size/resizable=false
 
+[global_group]
+
+mail=""
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

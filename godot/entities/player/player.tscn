@@ -15,6 +15,7 @@ MAIL_FRONT_SPRITE = ExtResource("4_vm8f3")
 MAIL_BACK_SPRITE = ExtResource("5_cadrd")
 
 [node name="ShadowSprite" type="Sprite2D" parent="."]
+scale = Vector2(1.2, 1.2)
 texture = ExtResource("1_kq3yy")
 
 [node name="FoxSprite" type="Sprite2D" parent="."]

@@ -16,7 +16,7 @@ extends Node2D
 @export var tile_pos := Vector2i.ZERO:
 	set(value):
 		tile_pos = value
-		var grid: TileMapLayer = %GroundLayer
+		var grid: TileMapLayer = %GroundTiles
 		if grid:
 			position = grid.to_global(grid.map_to_local(tile_pos))
 
@@ -43,9 +43,20 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if dir != Vector2i.ZERO:
 		# TODO: Check if there is a cell at tile_pos + dir
 		var new_pos := tile_pos + dir
-		var grid: TileMapLayer = %GroundLayer
+		var grid: TileMapLayer = %GroundTiles
 		if grid.get_cell_source_id(new_pos) >= 0:
 			tile_pos = new_pos
+			_check_overlaps()
+
+func _check_overlaps() -> void:
+	var all_mail := get_tree().get_nodes_in_group("mail")
+	for node in all_mail:
+		var mail = node as Mail
+		if mail and mail.tile_pos == tile_pos:
+			# Pick up mail piece!
+			_has_mail = true
+			_update_sprite()
+			mail.pick_up()
 
 func _update_sprite() -> void:
 	match facing:
