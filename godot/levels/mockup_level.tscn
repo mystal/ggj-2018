@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4 uid="uid://brf7jrw37s4t6"]
+[gd_scene load_steps=9 format=4 uid="uid://brf7jrw37s4t6"]
 
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="1_dkx27"]
 [ext_resource type="Script" path="res://levels/level.gd" id="1_pbmp5"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bnptf7dds53gt" path="res://entities/player/player.tscn" id="4_baiij"]
 [ext_resource type="PackedScene" uid="uid://v47jmubuxh50" path="res://entities/mail/mail.tscn" id="5_wed38"]
 [ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="6_4e4kd"]
+[ext_resource type="PackedScene" uid="uid://t7ra4ydart03" path="res://entities/pug/pug.tscn" id="8_omjnq"]
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_pbmp5")
@@ -34,6 +35,10 @@ tile_pos = Vector2i(6, 1)
 [node name="Mailbox" parent="Grid" instance=ExtResource("6_4e4kd")]
 position = Vector2(630, 315)
 tile_pos = Vector2i(6, 0)
+
+[node name="Pug" parent="Grid" instance=ExtResource("8_omjnq")]
+position = Vector2(720, 450)
+tile_pos = Vector2i(8, 1)
 
 [node name="Player" parent="Grid" instance=ExtResource("4_baiij")]
 position = Vector2(360, 451)

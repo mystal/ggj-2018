@@ -1,6 +1,6 @@
 @tool
 class_name Player
-extends Node2D
+extends TileNode
 
 @export_category("Sprites")
 @export var FRONT_SPRITE: Texture2D
@@ -13,12 +13,6 @@ extends Node2D
 	set(value):
 		facing = value
 		_update_sprite()
-@export var tile_pos := Vector2i.ZERO:
-	set(value):
-		tile_pos = value
-		var grid: TileMapLayer = %GroundTiles
-		if grid:
-			position = grid.to_global(grid.map_to_local(tile_pos))
 
 var _has_mail := false
 
@@ -65,6 +59,7 @@ func _check_overlaps() -> void:
 			if mailbox and mailbox.tile_pos == tile_pos:
 				var level := get_tree().current_scene as Level
 				if level:
+					# TODO: Play win anim and SFX!
 					level._start_next_level()
 
 

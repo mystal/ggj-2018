@@ -1,3 +1,3 @@
 @tool
-class_name Mailbox
+class_name Pug
 extends TileNode
