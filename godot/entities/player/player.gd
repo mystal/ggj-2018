@@ -51,12 +51,22 @@ func _unhandled_key_input(event: InputEvent) -> void:
 func _check_overlaps() -> void:
 	var all_mail := get_tree().get_nodes_in_group("mail")
 	for node in all_mail:
-		var mail = node as Mail
+		var mail := node as Mail
 		if mail and mail.tile_pos == tile_pos:
 			# Pick up mail piece!
 			_has_mail = true
 			_update_sprite()
 			mail.pick_up()
+
+	if _has_mail:
+		var all_mailboxes := get_tree().get_nodes_in_group("mailbox")
+		for node in all_mailboxes:
+			var mailbox := node as Mailbox
+			if mailbox and mailbox.tile_pos == tile_pos:
+				var level := get_tree().current_scene as Level
+				if level:
+					level._start_next_level()
+
 
 func _update_sprite() -> void:
 	match facing:

@@ -29,6 +29,7 @@ window/size/resizable=false
 [global_group]
 
 mail=""
+mailbox=""
 
 [rendering]
 

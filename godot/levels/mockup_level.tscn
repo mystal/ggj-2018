@@ -1,13 +1,16 @@
-[gd_scene load_steps=6 format=4 uid="uid://brf7jrw37s4t6"]
+[gd_scene load_steps=8 format=4 uid="uid://brf7jrw37s4t6"]
 
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="1_dkx27"]
 [ext_resource type="Script" path="res://levels/level.gd" id="1_pbmp5"]
+[ext_resource type="PackedScene" uid="uid://d1x1pdn1lnav3" path="res://levels/level1.tscn" id="2_pqwk4"]
 [ext_resource type="TileSet" uid="uid://d2rnlhlproojv" path="res://levels/tiles/level_tile_set.tres" id="3_xnuki"]
 [ext_resource type="PackedScene" uid="uid://bnptf7dds53gt" path="res://entities/player/player.tscn" id="4_baiij"]
 [ext_resource type="PackedScene" uid="uid://v47jmubuxh50" path="res://entities/mail/mail.tscn" id="5_wed38"]
+[ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="6_4e4kd"]
 
-[node name="MockupLevel" type="Node2D"]
+[node name="Level" type="Node2D"]
 script = ExtResource("1_pbmp5")
+NEXT_LEVEL = ExtResource("2_pqwk4")
 
 [node name="Background" type="Sprite2D" parent="."]
 z_index = -100
@@ -24,10 +27,14 @@ y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAGAAAAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAEAAAAAAAAAAAA=")
 tile_set = ExtResource("3_xnuki")
 
-[node name="Player" parent="Grid" instance=ExtResource("4_baiij")]
-position = Vector2(360, 451)
-tile_pos = Vector2i(6, 3)
-
 [node name="Mail" parent="Grid" instance=ExtResource("5_wed38")]
 position = Vector2(540, 360)
 tile_pos = Vector2i(6, 1)
+
+[node name="Mailbox" parent="Grid" instance=ExtResource("6_4e4kd")]
+position = Vector2(630, 315)
+tile_pos = Vector2i(6, 0)
+
+[node name="Player" parent="Grid" instance=ExtResource("4_baiij")]
+position = Vector2(360, 451)
+tile_pos = Vector2i(6, 3)

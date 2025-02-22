@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://80d58xng0nfl"]
+
+[ext_resource type="Texture2D" uid="uid://b7voaxg0yb5pm" path="res://entities/mailbox/mailbox.png" id="1_7ewsr"]
+[ext_resource type="Script" path="res://entities/mailbox/mailbox.gd" id="1_nadwd"]
+[ext_resource type="Texture2D" uid="uid://4qrd5njmags8" path="res://entities/shared/shadow.png" id="2_x3kp6"]
+
+[node name="Mailbox" type="Node2D" groups=["mailbox"]]
+script = ExtResource("1_nadwd")
+
+[node name="ShadowSprite" type="Sprite2D" parent="."]
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("2_x3kp6")
+
+[node name="MailboxSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -32)
+texture = ExtResource("1_7ewsr")

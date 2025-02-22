@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://dox3g4424bdur" path="res://entities/player/sneky_back_with_mail.png" id="5_cadrd"]
 
 [node name="Player" type="Node2D"]
+z_index = 10
 script = ExtResource("1_ag812")
 FRONT_SPRITE = ExtResource("1_qikv6")
 BACK_SPRITE = ExtResource("3_kvxpt")
@@ -19,6 +20,6 @@ scale = Vector2(1.2, 1.2)
 texture = ExtResource("1_kq3yy")
 
 [node name="FoxSprite" type="Sprite2D" parent="."]
-position = Vector2(12, -40)
+position = Vector2(12, -37)
 texture = ExtResource("1_qikv6")
 flip_h = true

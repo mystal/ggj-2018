@@ -1,0 +1,38 @@
+[gd_scene load_steps=7 format=3 uid="uid://d1x1pdn1lnav3"]
+
+[ext_resource type="Script" path="res://levels/level.gd" id="1_26h6e"]
+[ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="2_eo4og"]
+[ext_resource type="TileSet" uid="uid://d2rnlhlproojv" path="res://levels/tiles/level_tile_set.tres" id="3_0qcg5"]
+[ext_resource type="PackedScene" uid="uid://bnptf7dds53gt" path="res://entities/player/player.tscn" id="4_imunj"]
+[ext_resource type="PackedScene" uid="uid://v47jmubuxh50" path="res://entities/mail/mail.tscn" id="5_3ky10"]
+[ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="6_jlyxt"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_26h6e")
+
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -100
+texture = ExtResource("2_eo4og")
+centered = false
+
+[node name="Grid" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="GroundTiles" type="TileMapLayer" parent="Grid"]
+unique_name_in_owner = true
+z_index = -10
+y_sort_enabled = true
+tile_map_data = PackedByteArray(0, 0, 6, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+tile_set = ExtResource("3_0qcg5")
+
+[node name="Player" parent="Grid" instance=ExtResource("4_imunj")]
+position = Vector2(360, 451)
+tile_pos = Vector2i(6, 3)
+
+[node name="Mail" parent="Grid" instance=ExtResource("5_3ky10")]
+position = Vector2(450, 405)
+tile_pos = Vector2i(6, 2)
+
+[node name="Mailbox" parent="Grid" instance=ExtResource("6_jlyxt")]
+position = Vector2(720, 450)
+tile_pos = Vector2i(8, 1)
