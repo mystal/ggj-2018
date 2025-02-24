@@ -19,13 +19,13 @@ func play_bgm() -> void:
 	volume_db = -10.0
 	play()
 
-func play_sfx(stream: AudioStream) -> void:
+func play_sfx(sfx_stream: AudioStream) -> void:
 	# TODO: Try to get an available player, if none available make a new one!
 	if _available.is_empty():
 		_create_player()
 
 	var player := _available.pop_back() as AudioStreamPlayer
-	player.stream = stream
+	player.stream = sfx_stream
 	player.play()
 
 func _create_player() -> void:

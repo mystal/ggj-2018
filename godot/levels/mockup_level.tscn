@@ -42,4 +42,5 @@ tile_pos = Vector2i(8, 1)
 
 [node name="Player" parent="Grid" instance=ExtResource("4_baiij")]
 position = Vector2(360, 451)
+DEAD_FALL_SPEED = null
 tile_pos = Vector2i(6, 3)

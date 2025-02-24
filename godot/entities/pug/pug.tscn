@@ -116,8 +116,9 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="Pug" type="Node2D"]
+[node name="Pug" type="Node2D" groups=["pugs"]]
 script = ExtResource("1_b13th")
+facing = 1
 
 [node name="ShadowSprite" type="Sprite2D" parent="."]
 scale = Vector2(1.2, 1.2)
@@ -128,4 +129,3 @@ position = Vector2(0, -70)
 sprite_frames = SubResource("SpriteFrames_aak4s")
 animation = &"front"
 autoplay = "front"
-frame_progress = 0.168465

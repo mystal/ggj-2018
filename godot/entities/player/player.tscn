@@ -10,6 +10,7 @@
 [node name="Player" type="Node2D"]
 z_index = 10
 script = ExtResource("1_ag812")
+DEAD_FALL_SPEED = null
 FRONT_SPRITE = ExtResource("1_qikv6")
 BACK_SPRITE = ExtResource("3_kvxpt")
 MAIL_FRONT_SPRITE = ExtResource("4_vm8f3")

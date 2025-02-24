@@ -19,6 +19,7 @@ config/icon="res://icon.png"
 
 AudioManager="*res://globals/audio_manager.gd"
 Enums="*res://globals/enums.gd"
+Utils="*res://globals/utils.gd"
 
 [display]
 
@@ -30,6 +31,7 @@ window/size/resizable=false
 
 mail=""
 mailbox=""
+pugs=""
 
 [rendering]
 

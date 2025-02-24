@@ -5,6 +5,7 @@ extends Node2D
 @export var tile_pos := Vector2i.ZERO:
 	set(value):
 		tile_pos = value
-		var grid: TileMapLayer = %GroundTiles
-		if grid:
-			position = grid.to_global(grid.map_to_local(tile_pos))
+		if is_node_ready():
+			var grid: TileMapLayer = %GroundTiles
+			if grid:
+				position = grid.to_global(grid.map_to_local(tile_pos))
