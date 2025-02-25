@@ -21,7 +21,7 @@ tracks/0/keys = {
 }
 
 [sub_resource type="Animation" id="Animation_8ukuv"]
-resource_name = "play_text_blink]"
+resource_name = "play_text_blink"
 length = 1.2
 loop_mode = 1
 tracks/0/type = "value"

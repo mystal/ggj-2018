@@ -1,0 +1,94 @@
+[gd_scene load_steps=6 format=3 uid="uid://bd6vdnxompffq"]
+
+[ext_resource type="FontFile" uid="uid://k72rx04hamun" path="res://ui/fonts/Indie_Flower/IndieFlower.ttf" id="1_eguwp"]
+[ext_resource type="Script" path="res://ui/hud.gd" id="1_picy4"]
+
+[sub_resource type="Animation" id="Animation_k4g2j"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("RetryText:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_8ukuv"]
+resource_name = "play_text_blink"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("RetryText:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0333333, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_as7qa"]
+_data = {
+"RESET": SubResource("Animation_k4g2j"),
+"play_text_blink": SubResource("Animation_8ukuv")
+}
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_picy4")
+
+[node name="LoseText" type="Label" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -364.0
+offset_top = -218.0
+offset_right = 364.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 5
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = ExtResource("1_eguwp")
+theme_override_font_sizes/font_size = 70
+text = "The Pugs win again..."
+horizontal_alignment = 1
+
+[node name="RetryText" type="Label" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -354.5
+offset_top = -124.0
+offset_right = 354.5
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 5
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = ExtResource("1_eguwp")
+theme_override_font_sizes/font_size = 70
+text = "Press Space to retry"
+horizontal_alignment = 1
+
+[node name="TextAnimationPlayer" type="AnimationPlayer" parent="RetryText"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_as7qa")
+}
+autoplay = "RESET"

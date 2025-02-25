@@ -8,7 +8,11 @@ extends TileNode
 		if is_node_ready():
 			_update_sprite()
 
+@export var BARK_SFX: AudioStream
+
+@export_group("Death")
 @export var DEAD_FALL_SPEED: float = 400.0
+@export var FALL_SFX: AudioStream
 
 var is_dead := false
 
@@ -20,7 +24,11 @@ func _process(delta: float) -> void:
 		position.y += DEAD_FALL_SPEED * delta
 
 func died() -> void:
-	# TODO: Play sound, flip vertically, start falling.
+	if is_dead:
+		return
+
+	# Play sound, flip vertically, start falling.
+	AudioManager.play_sfx(FALL_SFX)
 	$ShadowSprite.visible = false
 	$PugSprite.flip_v = true
 	z_index = 15
@@ -31,8 +39,9 @@ func died() -> void:
 	queue_free()
 
 func attack(new_tile_pos: Vector2i) -> void:
-	# TODO: Play sound
+	# Play sound
 	tile_pos = new_tile_pos
+	AudioManager.play_sfx(BARK_SFX)
 
 func _update_sprite() -> void:
 	match facing:

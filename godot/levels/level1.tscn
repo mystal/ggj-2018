@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://d1x1pdn1lnav3"]
+[gd_scene load_steps=9 format=3 uid="uid://d1x1pdn1lnav3"]
 
 [ext_resource type="Script" path="res://levels/level.gd" id="1_26h6e"]
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="2_eo4og"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://v47jmubuxh50" path="res://entities/mail/mail.tscn" id="5_3ky10"]
 [ext_resource type="PackedScene" uid="uid://t7ra4ydart03" path="res://entities/pug/pug.tscn" id="6_64y42"]
 [ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="6_jlyxt"]
+[ext_resource type="PackedScene" uid="uid://bd6vdnxompffq" path="res://ui/hud.tscn" id="8_57gi7"]
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_26h6e")
@@ -41,5 +42,6 @@ tile_pos = Vector2i(7, 1)
 
 [node name="Player" parent="Grid" instance=ExtResource("4_imunj")]
 position = Vector2(360, 451)
-DEAD_FALL_SPEED = null
 tile_pos = Vector2i(6, 3)
+
+[node name="HUD" parent="." instance=ExtResource("8_57gi7")]

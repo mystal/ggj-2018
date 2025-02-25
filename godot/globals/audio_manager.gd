@@ -16,7 +16,7 @@ func play_bgm() -> void:
 		return
 
 	stream = BGM
-	volume_db = -10.0
+	volume_db = -20.0
 	play()
 
 func play_sfx(sfx_stream: AudioStream) -> void:
