@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=4 uid="uid://byb8cc8g75r1r"]
+[gd_scene load_steps=10 format=4 uid="uid://byb8cc8g75r1r"]
 
 [ext_resource type="Script" path="res://levels/level.gd" id="1_u22hs"]
+[ext_resource type="PackedScene" uid="uid://cr3gfyri6t2cw" path="res://levels/level4.tscn" id="2_w1o0l"]
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="3_uy1dk"]
 [ext_resource type="TileSet" uid="uid://d2rnlhlproojv" path="res://levels/tiles/level_tile_set.tres" id="4_w5yt4"]
 [ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="5_ndt0t"]
@@ -11,6 +12,7 @@
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_u22hs")
+NEXT_LEVEL = ExtResource("2_w1o0l")
 
 [node name="Background" type="Sprite2D" parent="."]
 z_index = -100

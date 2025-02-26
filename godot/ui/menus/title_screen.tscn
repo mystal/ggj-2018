@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://p5bae6436kyd"]
+[gd_scene load_steps=9 format=3 uid="uid://p5bae6436kyd"]
 
-[ext_resource type="Script" path="res://ui/menus/title_screen.gd" id="1_711mm"]
+[ext_resource type="Script" path="res://ui/menus/menu_screen.gd" id="1_711mm"]
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="1_b5thc"]
+[ext_resource type="PackedScene" uid="uid://brf7jrw37s4t6" path="res://levels/mockup_level.tscn" id="2_658xe"]
 [ext_resource type="Texture2D" uid="uid://cx8lnm4hrakvq" path="res://ui/menus/title.png" id="2_jt6wx"]
 [ext_resource type="FontFile" uid="uid://k72rx04hamun" path="res://ui/fonts/Indie_Flower/IndieFlower.ttf" id="3_exsv4"]
 
@@ -51,6 +52,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_711mm")
+NEXT_LEVEL = ExtResource("2_658xe")
 
 [node name="Background" type="Sprite2D" parent="."]
 texture = ExtResource("1_b5thc")
@@ -78,7 +80,7 @@ theme_override_constants/shadow_offset_x = 5
 theme_override_constants/shadow_offset_y = 5
 theme_override_fonts/font = ExtResource("3_exsv4")
 theme_override_font_sizes/font_size = 80
-text = "Press Space to play!"
+text = "Press Space to Play!"
 horizontal_alignment = 1
 
 [node name="TextAnimationPlayer" type="AnimationPlayer" parent="PlayText"]

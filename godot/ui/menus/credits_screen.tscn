@@ -1,0 +1,133 @@
+[gd_scene load_steps=9 format=3 uid="uid://bcc8ugyc5jnx4"]
+
+[ext_resource type="Script" path="res://ui/menus/menu_screen.gd" id="1_wndc4"]
+[ext_resource type="PackedScene" uid="uid://brf7jrw37s4t6" path="res://levels/mockup_level.tscn" id="2_e6ghl"]
+[ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="2_ucwmo"]
+[ext_resource type="Texture2D" uid="uid://cx8lnm4hrakvq" path="res://ui/menus/title.png" id="3_vbt3e"]
+[ext_resource type="FontFile" uid="uid://k72rx04hamun" path="res://ui/fonts/Indie_Flower/IndieFlower.ttf" id="4_oqec0"]
+
+[sub_resource type="Animation" id="Animation_k4g2j"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayText:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_8ukuv"]
+resource_name = "play_text_blink"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayText:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0333333, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_as7qa"]
+_data = {
+"RESET": SubResource("Animation_k4g2j"),
+"play_text_blink": SubResource("Animation_8ukuv")
+}
+
+[node name="CreditsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_wndc4")
+NEXT_LEVEL = ExtResource("2_e6ghl")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_ucwmo")
+centered = false
+
+[node name="Title" type="Sprite2D" parent="."]
+position = Vector2(512, 340)
+texture = ExtResource("3_vbt3e")
+
+[node name="CreditsText" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -128.5
+offset_top = 27.0
+offset_right = 128.5
+offset_bottom = 272.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("4_oqec0")
+theme_override_font_sizes/font_size = 40
+text = "Justin Hamilton
+Gabriel Martinez
+Linda Cai
+Angelo Yazar"
+horizontal_alignment = 1
+
+[node name="WinText" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -394.5
+offset_top = -267.0
+offset_right = 394.5
+offset_bottom = -149.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 5
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = ExtResource("4_oqec0")
+theme_override_font_sizes/font_size = 80
+text = "You Won!"
+horizontal_alignment = 1
+
+[node name="PlayText" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -394.5
+offset_top = -153.0
+offset_right = 394.5
+offset_bottom = -35.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 5
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = ExtResource("4_oqec0")
+theme_override_font_sizes/font_size = 70
+text = "Press Space to Play Again"
+horizontal_alignment = 1
+
+[node name="TextAnimationPlayer" type="AnimationPlayer" parent="PlayText"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_as7qa")
+}
+autoplay = "play_text_blink"

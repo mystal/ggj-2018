@@ -22,10 +22,10 @@ MOVE_SFX = ExtResource("7_1bd7e")
 WON_SFX = ExtResource("2_u8llj")
 
 [node name="ShadowSprite" type="Sprite2D" parent="."]
-scale = Vector2(1.2, 1.2)
 texture = ExtResource("1_kq3yy")
 
 [node name="FoxSprite" type="Sprite2D" parent="."]
-position = Vector2(12, -37)
+position = Vector2(10, -31)
+scale = Vector2(0.8, 0.8)
 texture = ExtResource("1_qikv6")
 flip_h = true

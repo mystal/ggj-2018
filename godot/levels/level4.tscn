@@ -1,7 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://cr3gfyri6t2cw"]
+[gd_scene load_steps=10 format=4 uid="uid://cr3gfyri6t2cw"]
 
 [ext_resource type="Script" path="res://levels/level.gd" id="1_s13hx"]
-[ext_resource type="PackedScene" uid="uid://c7dqj6cv46274" path="res://levels/level2.tscn" id="2_oag8g"]
+[ext_resource type="PackedScene" uid="uid://dxl4xdl36hebt" path="res://levels/level5.tscn" id="2_l5p70"]
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="3_ngwux"]
 [ext_resource type="TileSet" uid="uid://d2rnlhlproojv" path="res://levels/tiles/level_tile_set.tres" id="4_dfubg"]
 [ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="5_tyogo"]
@@ -12,7 +12,7 @@
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_s13hx")
-NEXT_LEVEL = ExtResource("2_oag8g")
+NEXT_LEVEL = ExtResource("2_l5p70")
 
 [node name="Background" type="Sprite2D" parent="."]
 z_index = -100
@@ -26,24 +26,46 @@ y_sort_enabled = true
 unique_name_in_owner = true
 z_index = -10
 y_sort_enabled = true
-tile_map_data = PackedByteArray(0, 0, 6, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+tile_map_data = PackedByteArray("AAAGAAMAAAAAAAAAAAAHAAEAAAAAAAAAAAAHAAIAAAAAAAAAAAAHAAMAAAAAAAAAAAAIAAEAAAAAAAAAAAAIAAMAAAAAAAAAAAAFAAEAAAAAAAAAAAAFAAIAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAP//AAAAAAAAAAAGAAAAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAP//AAAAAAAAAAAIAAIAAAAAAAAAAAA=")
 tile_set = ExtResource("4_dfubg")
 
 [node name="Mailbox" parent="Grid" instance=ExtResource("5_tyogo")]
+position = Vector2(810, 315)
+tile_pos = Vector2i(7, -1)
+
+[node name="Mail" parent="Grid" instance=ExtResource("6_hj75t")]
 position = Vector2(720, 450)
 tile_pos = Vector2i(8, 1)
 
-[node name="Mail" parent="Grid" instance=ExtResource("6_hj75t")]
+[node name="Pug" parent="Grid" instance=ExtResource("7_lqdyh")]
 position = Vector2(450, 405)
+facing = 2
 tile_pos = Vector2i(6, 2)
 
-[node name="Pug" parent="Grid" instance=ExtResource("7_lqdyh")]
-position = Vector2(630, 405)
+[node name="Pug2" parent="Grid" instance=ExtResource("7_lqdyh")]
+position = Vector2(540, 450)
+tile_pos = Vector2i(7, 2)
+
+[node name="Pug3" parent="Grid" instance=ExtResource("7_lqdyh")]
+position = Vector2(630, 495)
+facing = 3
+tile_pos = Vector2i(8, 2)
+
+[node name="Pug4" parent="Grid" instance=ExtResource("7_lqdyh")]
+position = Vector2(450, 315)
+tile_pos = Vector2i(5, 1)
+
+[node name="Pug5" parent="Grid" instance=ExtResource("7_lqdyh")]
+position = Vector2(540, 360)
 facing = 2
+tile_pos = Vector2i(6, 1)
+
+[node name="Pug6" parent="Grid" instance=ExtResource("7_lqdyh")]
+position = Vector2(630, 405)
 tile_pos = Vector2i(7, 1)
 
 [node name="Player" parent="Grid" instance=ExtResource("8_a4vjp")]
-position = Vector2(360, 451)
-tile_pos = Vector2i(6, 3)
+position = Vector2(270, 405)
+tile_pos = Vector2i(5, 3)
 
 [node name="HUD" parent="." instance=ExtResource("9_o0jod")]
