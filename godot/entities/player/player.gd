@@ -122,14 +122,14 @@ func _update_sprite() -> void:
 
 func died() -> void:
 	# Play sound, flip vertically, start falling.
-	AudioManager.play_sfx(FALL_SFX)
+	# AudioManager.play_sfx(FALL_SFX)
 	$ShadowSprite.visible = false
 	$FoxSprite.flip_v = true
 	z_index = 20
 	set_process_unhandled_key_input(false)
 	is_dead = true
 
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.6).timeout
 	var level := get_tree().current_scene as Level
 	if level:
 		level.player_lost()

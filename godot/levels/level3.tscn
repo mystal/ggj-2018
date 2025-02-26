@@ -1,0 +1,51 @@
+[gd_scene load_steps=9 format=4 uid="uid://byb8cc8g75r1r"]
+
+[ext_resource type="Script" path="res://levels/level.gd" id="1_u22hs"]
+[ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="3_uy1dk"]
+[ext_resource type="TileSet" uid="uid://d2rnlhlproojv" path="res://levels/tiles/level_tile_set.tres" id="4_w5yt4"]
+[ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="5_ndt0t"]
+[ext_resource type="PackedScene" uid="uid://v47jmubuxh50" path="res://entities/mail/mail.tscn" id="6_cbeia"]
+[ext_resource type="PackedScene" uid="uid://t7ra4ydart03" path="res://entities/pug/pug.tscn" id="7_4a6kq"]
+[ext_resource type="PackedScene" uid="uid://bnptf7dds53gt" path="res://entities/player/player.tscn" id="8_bsqvs"]
+[ext_resource type="PackedScene" uid="uid://bd6vdnxompffq" path="res://ui/hud.tscn" id="9_n4qgb"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_u22hs")
+
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -100
+texture = ExtResource("3_uy1dk")
+centered = false
+
+[node name="Grid" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="GroundTiles" type="TileMapLayer" parent="Grid"]
+unique_name_in_owner = true
+z_index = -10
+y_sort_enabled = true
+tile_map_data = PackedByteArray("AAAGAAMAAAAAAAAAAAAHAAIAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAAAAAAAAAAAHAAMAAAAAAAAAAAAIAAIAAAAAAAAAAAAGAAEAAAAAAAAAAAA=")
+tile_set = ExtResource("4_w5yt4")
+
+[node name="Mailbox" parent="Grid" instance=ExtResource("5_ndt0t")]
+position = Vector2(720, 450)
+tile_pos = Vector2i(8, 1)
+
+[node name="Mail" parent="Grid" instance=ExtResource("6_cbeia")]
+position = Vector2(450, 405)
+tile_pos = Vector2i(6, 2)
+
+[node name="Pug" parent="Grid" instance=ExtResource("7_4a6kq")]
+position = Vector2(630, 405)
+facing = 2
+tile_pos = Vector2i(7, 1)
+
+[node name="Pug2" parent="Grid" instance=ExtResource("7_4a6kq")]
+position = Vector2(540, 360)
+tile_pos = Vector2i(6, 1)
+
+[node name="Player" parent="Grid" instance=ExtResource("8_bsqvs")]
+position = Vector2(360, 451)
+tile_pos = Vector2i(6, 3)
+
+[node name="HUD" parent="." instance=ExtResource("9_n4qgb")]
