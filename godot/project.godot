@@ -32,6 +32,7 @@ window/size/resizable=false
 mail=""
 mailbox=""
 pugs=""
+bones=""
 
 [rendering]
 

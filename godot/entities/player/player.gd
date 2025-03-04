@@ -24,6 +24,7 @@ extends TileNode
 @export var WON_SFX: AudioStream
 
 var is_dead := false
+var throwing_bone: Bone
 var has_mail := false
 
 func _ready() -> void:
@@ -37,25 +38,48 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	var dir := Vector2i.ZERO
 	if event.is_action_pressed("ui_left"):
 		dir = Vector2i.LEFT
-		facing = Enums.Direction.WEST
 	elif event.is_action_pressed("ui_right"):
 		dir = Vector2i.RIGHT
-		facing = Enums.Direction.EAST
 	elif event.is_action_pressed("ui_up"):
 		dir = Vector2i.UP
-		facing = Enums.Direction.NORTH
 	elif event.is_action_pressed("ui_down"):
 		dir = Vector2i.DOWN
+
+	if dir == Vector2i.ZERO:
+		return
+
+	if throwing_bone:
+		_try_throw_bone(dir)
+	else:
+		_try_move(dir)
+
+func _try_move(dir: Vector2i) -> void:
+	if dir == Vector2i.LEFT:
+		facing = Enums.Direction.WEST
+	elif dir == Vector2i.RIGHT:
+		facing = Enums.Direction.EAST
+	elif dir == Vector2i.UP:
+		facing = Enums.Direction.NORTH
+	elif dir == Vector2i.DOWN:
 		facing = Enums.Direction.SOUTH
 
 	if dir != Vector2i.ZERO:
-		# TODO: Check if there is a cell at tile_pos + dir
+		# Check if there is a cell at tile_pos + dir
 		var new_pos := tile_pos + dir
 		var grid: TileMapLayer = %GroundTiles
 		if grid.get_cell_source_id(new_pos) >= 0:
 			tile_pos = new_pos
 			if not _check_overlaps():
 				AudioManager.play_sfx(MOVE_SFX)
+
+func _try_throw_bone(dir: Vector2i) -> void:
+	if dir != Vector2i.ZERO:
+		# Check if there is a cell at tile_pos + dir
+		var new_pos := tile_pos + dir
+		var grid: TileMapLayer = %GroundTiles
+		if grid.get_cell_source_id(new_pos) >= 0:
+			throwing_bone.throw(new_pos)
+			throwing_bone = null
 
 func _check_overlaps() -> bool:
 	var overlapped := false
@@ -72,6 +96,13 @@ func _check_overlaps() -> bool:
 		elif pug.tile_pos == tile_pos:
 			overlapped = true
 			pug.died()
+
+	var all_bones := get_tree().get_nodes_in_group("bones")
+	for node in all_bones:
+		var bone := node as Bone
+		if bone and bone.tile_pos == tile_pos:
+			throwing_bone = bone
+			bone.pick_up()
 
 	var all_mail := get_tree().get_nodes_in_group("mail")
 	for node in all_mail:

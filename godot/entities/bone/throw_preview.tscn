@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://ci1j8n56g8reh"]
+
+[ext_resource type="Texture2D" uid="uid://6v5froadvjsj" path="res://entities/bone/bone.png" id="3_6sch0"]
+
+[node name="ThrowPreview" type="Sprite2D"]
+modulate = Color(1, 1, 1, 0.196078)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_6sch0")

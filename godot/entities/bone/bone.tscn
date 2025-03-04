@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://di2e7yyrghunb"]
+
+[ext_resource type="Script" path="res://entities/bone/bone.gd" id="1_vn38t"]
+[ext_resource type="Texture2D" uid="uid://6v5froadvjsj" path="res://entities/bone/bone.png" id="1_xdpfn"]
+[ext_resource type="Texture2D" uid="uid://4qrd5njmags8" path="res://entities/shared/shadow.png" id="2_ptkpe"]
+
+[node name="Bone" type="Node2D" groups=["bones"]]
+script = ExtResource("1_vn38t")
+
+[node name="ShadowSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("2_ptkpe")
+
+[node name="BoneSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("1_xdpfn")
