@@ -1,7 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://bcc8ugyc5jnx4"]
+[gd_scene load_steps=8 format=3 uid="uid://bcc8ugyc5jnx4"]
 
 [ext_resource type="Script" path="res://ui/menus/menu_screen.gd" id="1_wndc4"]
-[ext_resource type="PackedScene" uid="uid://brf7jrw37s4t6" path="res://levels/mockup_level.tscn" id="2_e6ghl"]
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="2_ucwmo"]
 [ext_resource type="Texture2D" uid="uid://cx8lnm4hrakvq" path="res://ui/menus/title.png" id="3_vbt3e"]
 [ext_resource type="FontFile" uid="uid://k72rx04hamun" path="res://ui/fonts/Indie_Flower/IndieFlower.ttf" id="4_oqec0"]
@@ -52,7 +51,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_wndc4")
-NEXT_LEVEL = ExtResource("2_e6ghl")
 
 [node name="Background" type="Sprite2D" parent="."]
 texture = ExtResource("2_ucwmo")
