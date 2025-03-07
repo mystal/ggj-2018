@@ -4,7 +4,7 @@ extends TileNode
 
 const THROW_PREVIEW: PackedScene = preload("res://entities/bone/throw_preview.tscn")
 
-var _throw_previews: Array[TileNode]
+var _throw_previews: Array[ThrowPreview]
 
 func pick_up() -> void:
 	var grid: TileMapLayer = %GroundTiles
@@ -23,10 +23,11 @@ func throw(throw_tile_pos: Vector2i) -> void:
 	# Only destroy the ones not at throw_tile_pos.
 	for preview in _throw_previews:
 		if preview.tile_pos == throw_tile_pos:
-			# preview.queue_free()
-			pass
+			preview.flicker()
 		else:
 			preview.queue_free()
+
+	# TODO: Tell nearby dogs to move to this spot.
 
 	await get_tree().create_timer(0.5).timeout
 
