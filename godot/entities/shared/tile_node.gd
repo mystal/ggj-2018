@@ -8,4 +8,4 @@ extends Node2D
 		if is_node_ready():
 			var grid: TileMapLayer = %GroundTiles
 			if grid:
-				position = grid.to_global(grid.map_to_local(tile_pos))
+				global_position = grid.to_global(grid.map_to_local(tile_pos))

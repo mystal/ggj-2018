@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://bcc8ugyc5jnx4"]
 
-[ext_resource type="Script" path="res://ui/menus/menu_screen.gd" id="1_wndc4"]
+[ext_resource type="Script" uid="uid://t3hpq7aagf6h" path="res://ui/menus/menu_screen.gd" id="1_wndc4"]
 [ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="2_ucwmo"]
 [ext_resource type="Texture2D" uid="uid://cx8lnm4hrakvq" path="res://ui/menus/title.png" id="3_vbt3e"]
 [ext_resource type="FontFile" uid="uid://k72rx04hamun" path="res://ui/fonts/Indie_Flower/IndieFlower.ttf" id="4_oqec0"]
@@ -39,8 +39,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_as7qa"]
 _data = {
-"RESET": SubResource("Animation_k4g2j"),
-"play_text_blink": SubResource("Animation_8ukuv")
+&"RESET": SubResource("Animation_k4g2j"),
+&"play_text_blink": SubResource("Animation_8ukuv")
 }
 
 [node name="CreditsScreen" type="Control"]

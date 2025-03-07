@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://di2e7yyrghunb"]
 
-[ext_resource type="Script" path="res://entities/bone/bone.gd" id="1_vn38t"]
+[ext_resource type="Script" uid="uid://c1maygp82xg24" path="res://entities/bone/bone.gd" id="1_vn38t"]
 [ext_resource type="Texture2D" uid="uid://6v5froadvjsj" path="res://entities/bone/bone.png" id="1_xdpfn"]
 [ext_resource type="Texture2D" uid="uid://4qrd5njmags8" path="res://entities/shared/shadow.png" id="2_ptkpe"]
 

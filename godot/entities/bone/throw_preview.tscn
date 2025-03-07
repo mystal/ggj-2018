@@ -1,8 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://ci1j8n56g8reh"]
+[gd_scene load_steps=3 format=3 uid="uid://ci1j8n56g8reh"]
 
+[ext_resource type="Script" uid="uid://dlmjlwigw02r4" path="res://entities/shared/tile_node.gd" id="1_si4ub"]
 [ext_resource type="Texture2D" uid="uid://6v5froadvjsj" path="res://entities/bone/bone.png" id="3_6sch0"]
 
-[node name="ThrowPreview" type="Sprite2D"]
+[node name="ThrowPreview" type="Node2D"]
+script = ExtResource("1_si4ub")
+metadata/_custom_type_script = "uid://dlmjlwigw02r4"
+
+[node name="BoneSprite" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.196078)
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("3_6sch0")

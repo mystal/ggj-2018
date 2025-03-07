@@ -1,2 +1,0 @@
-class_name ThrowPreview
-extends TileNode

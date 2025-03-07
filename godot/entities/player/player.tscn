@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://bnptf7dds53gt"]
 
-[ext_resource type="Script" path="res://entities/player/player.gd" id="1_ag812"]
+[ext_resource type="Script" uid="uid://csto7da2newdh" path="res://entities/player/player.gd" id="1_ag812"]
 [ext_resource type="Texture2D" uid="uid://4qrd5njmags8" path="res://entities/shared/shadow.png" id="1_kq3yy"]
 [ext_resource type="Texture2D" uid="uid://cp5fg1odhutrr" path="res://entities/player/sneky_front.png" id="1_qikv6"]
 [ext_resource type="AudioStream" uid="uid://c3ehbvaio3x3f" path="res://entities/player/won_level.wav" id="2_u8llj"]

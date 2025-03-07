@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bd6vdnxompffq"]
 
 [ext_resource type="FontFile" uid="uid://k72rx04hamun" path="res://ui/fonts/Indie_Flower/IndieFlower.ttf" id="1_eguwp"]
-[ext_resource type="Script" path="res://ui/hud.gd" id="1_picy4"]
+[ext_resource type="Script" uid="uid://7bp0suuf1nr8" path="res://ui/hud.gd" id="1_picy4"]
 
 [sub_resource type="Animation" id="Animation_k4g2j"]
 length = 0.001
@@ -37,8 +37,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_as7qa"]
 _data = {
-"RESET": SubResource("Animation_k4g2j"),
-"play_text_blink": SubResource("Animation_8ukuv")
+&"RESET": SubResource("Animation_k4g2j"),
+&"play_text_blink": SubResource("Animation_8ukuv")
 }
 
 [node name="HUD" type="CanvasLayer"]
