@@ -2,6 +2,12 @@
 class_name Pug
 extends TileNode
 
+enum State {
+	Guarding,
+	Inspecting,
+	Dead,
+}
+
 @export var facing := Enums.Direction.EAST:
 	set(value):
 		facing = value
@@ -14,7 +20,17 @@ extends TileNode
 @export var DEAD_FALL_SPEED: float = 400.0
 @export var FALL_SFX: AudioStream
 
-var is_dead := false
+var state := State.Guarding
+var is_guarding: bool:
+	get():
+		return state == State.Guarding
+var is_inspecting: bool:
+	get():
+		return state == State.Inspecting
+var is_dead: bool:
+	get():
+		return state == State.Dead
+var inspect_pos: Vector2i
 
 func _ready() -> void:
 	_update_sprite()
@@ -22,6 +38,13 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if is_dead:
 		position.y += DEAD_FALL_SPEED * delta
+
+func step() -> void:
+	if not is_inspecting:
+		return
+
+	# TODO: Take a step towards inspection position.
+	# TODO: Once reached, go back to Guarding.
 
 func died() -> void:
 	if is_dead:
@@ -32,16 +55,27 @@ func died() -> void:
 	$ShadowSprite.visible = false
 	$PugSprite.flip_v = true
 	z_index = 15
-	is_dead = true
+	state = State.Dead
 
 	# Despawn after a timeout
 	await get_tree().create_timer(2.0).timeout
 	queue_free()
 
 func attack(new_tile_pos: Vector2i) -> void:
+	if is_dead:
+		return
+
 	# Play sound
 	tile_pos = new_tile_pos
 	AudioManager.play_sfx(BARK_SFX)
+
+func inspect(new_inspect_pos: Vector2i) -> void:
+	if is_dead:
+		return
+
+	$QuestionMarkSprite.visible = true
+	state = State.Inspecting
+	inspect_pos = new_inspect_pos
 
 func _update_sprite() -> void:
 	match facing:

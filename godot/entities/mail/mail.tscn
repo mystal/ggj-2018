@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://4qrd5njmags8" path="res://entities/shared/shadow.png" id="1_rjmgs"]
 
 [node name="Mail" type="Node2D" groups=["mail"]]
+z_index = 1
 script = ExtResource("1_a70mr")
 
 [node name="ShadowSprite" type="Sprite2D" parent="."]

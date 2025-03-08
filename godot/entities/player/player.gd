@@ -2,6 +2,8 @@
 class_name Player
 extends TileNode
 
+signal moved(old_pos: Vector2i, new_pos: Vector2i)
+
 @export_category("Sprites")
 @export var FRONT_SPRITE: Texture2D
 @export var BACK_SPRITE: Texture2D
@@ -68,9 +70,12 @@ func _try_move(dir: Vector2i) -> void:
 		var new_pos := tile_pos + dir
 		var grid: TileMapLayer = %GroundTiles
 		if grid.get_cell_source_id(new_pos) >= 0:
+			var old_pos = tile_pos
 			tile_pos = new_pos
 			if not _check_overlaps():
 				AudioManager.play_sfx(MOVE_SFX)
+			if not is_dead:
+				moved.emit(old_pos, tile_pos)
 
 func _try_throw_bone(dir: Vector2i) -> void:
 	if dir != Vector2i.ZERO:
@@ -123,7 +128,7 @@ func _check_overlaps() -> bool:
 				if level:
 					set_process_unhandled_key_input(false)
 					overlapped = true
-					# TODO: Play win anim and SFX!
+					# Play win SFX!
 					AudioManager.play_sfx(WON_SFX)
 					level.player_won()
 					break

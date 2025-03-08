@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://t7ra4ydart03"]
+[gd_scene load_steps=23 format=3 uid="uid://t7ra4ydart03"]
 
 [ext_resource type="Texture2D" uid="uid://bamgscivxxubi" path="res://entities/pug/pug_front_idle.png" id="1_78la5"]
 [ext_resource type="Script" uid="uid://5snj0holpc2w" path="res://entities/pug/pug.gd" id="1_b13th"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://2t7lifyvwk1x" path="res://entities/pug/pug_back_idle.png" id="1_phk61"]
 [ext_resource type="AudioStream" uid="uid://e2lbkhyeqg1k" path="res://entities/shared/falling.wav" id="2_a387q"]
 [ext_resource type="AudioStream" uid="uid://bjq730vuuqsko" path="res://entities/pug/bark.wav" id="2_x8fxt"]
+[ext_resource type="Texture2D" uid="uid://ehyj6djx66hb" path="res://entities/pug/question_mark.png" id="7_gfpkv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_o4vow"]
 atlas = ExtResource("1_phk61")
@@ -133,3 +134,8 @@ position = Vector2(0, -70)
 sprite_frames = SubResource("SpriteFrames_aak4s")
 animation = &"front"
 autoplay = "front"
+
+[node name="QuestionMarkSprite" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -169)
+texture = ExtResource("7_gfpkv")

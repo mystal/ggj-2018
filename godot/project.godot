@@ -33,6 +33,7 @@ mail=""
 mailbox=""
 pugs=""
 bones=""
+player=""
 
 [rendering]
 

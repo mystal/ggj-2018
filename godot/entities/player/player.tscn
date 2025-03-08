@@ -10,7 +10,7 @@
 [ext_resource type="AudioStream" uid="uid://e2lbkhyeqg1k" path="res://entities/shared/falling.wav" id="6_d3s4p"]
 [ext_resource type="AudioStream" uid="uid://cacddlsqpb314" path="res://entities/player/fox_move.wav" id="7_1bd7e"]
 
-[node name="Player" type="Node2D"]
+[node name="Player" type="Node2D" groups=["player"]]
 z_index = 10
 script = ExtResource("1_ag812")
 FRONT_SPRITE = ExtResource("1_qikv6")

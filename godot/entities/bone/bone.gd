@@ -27,7 +27,14 @@ func throw(throw_tile_pos: Vector2i) -> void:
 		else:
 			preview.queue_free()
 
-	# TODO: Tell nearby dogs to move to this spot.
+	# Tell nearby pugs to inspect this spot.
+	var all_pugs := get_tree().get_nodes_in_group("pugs")
+	for node in all_pugs:
+		var pug := node as Pug
+		if not pug or pug.is_dead:
+			continue
+		if pug.tile_pos.distance_squared_to(throw_tile_pos) <= 2:
+			pug.inspect(throw_tile_pos)
 
 	await get_tree().create_timer(0.5).timeout
 
