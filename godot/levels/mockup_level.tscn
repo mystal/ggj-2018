@@ -1,12 +1,10 @@
-[gd_scene load_steps=12 format=4 uid="uid://brf7jrw37s4t6"]
+[gd_scene load_steps=10 format=4 uid="uid://brf7jrw37s4t6"]
 
-[ext_resource type="Texture2D" uid="uid://bdxepipqf50mm" path="res://shared/background.png" id="1_dkx27"]
 [ext_resource type="Script" uid="uid://dljexduut4egm" path="res://levels/level.gd" id="1_pbmp5"]
 [ext_resource type="PackedScene" uid="uid://d1x1pdn1lnav3" path="res://levels/level1.tscn" id="2_pqwk4"]
+[ext_resource type="Texture2D" uid="uid://cm4qugdojgvou" path="res://levels/backgrounds/instructions_background.png" id="3_jf2fb"]
 [ext_resource type="TileSet" uid="uid://d2rnlhlproojv" path="res://levels/tiles/level_tile_set.tres" id="3_xnuki"]
-[ext_resource type="Texture2D" uid="uid://cgt8ok1p6nci3" path="res://levels/backgrounds/move_with.png" id="4_18t8g"]
 [ext_resource type="PackedScene" uid="uid://bnptf7dds53gt" path="res://entities/player/player.tscn" id="4_baiij"]
-[ext_resource type="Texture2D" uid="uid://bmt5ucwlslu3e" path="res://levels/backgrounds/instructions.png" id="5_35ksn"]
 [ext_resource type="PackedScene" uid="uid://v47jmubuxh50" path="res://entities/mail/mail.tscn" id="5_wed38"]
 [ext_resource type="PackedScene" uid="uid://80d58xng0nfl" path="res://entities/mailbox/mailbox.tscn" id="6_4e4kd"]
 [ext_resource type="PackedScene" uid="uid://t7ra4ydart03" path="res://entities/pug/pug.tscn" id="8_omjnq"]
@@ -18,18 +16,8 @@ NEXT_LEVEL = ExtResource("2_pqwk4")
 
 [node name="Background" type="Sprite2D" parent="."]
 z_index = -100
-texture = ExtResource("1_dkx27")
+texture = ExtResource("3_jf2fb")
 centered = false
-
-[node name="MoveWith" type="Sprite2D" parent="Background"]
-z_index = 10
-position = Vector2(152, 126)
-texture = ExtResource("4_18t8g")
-
-[node name="Instructions" type="Sprite2D" parent="Background"]
-z_index = 10
-position = Vector2(427, 286)
-texture = ExtResource("5_35ksn")
 
 [node name="Grid" type="Node2D" parent="."]
 y_sort_enabled = true
@@ -38,23 +26,23 @@ y_sort_enabled = true
 unique_name_in_owner = true
 z_index = -10
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAAGAAAAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAEAAAAAAAAAAAA=")
+tile_map_data = PackedByteArray("AAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAGAAMAAAAAAAAAAAAIAAIAAAAAAAAAAAAGAAQAAAAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAAAAAAAAAAA=")
 tile_set = ExtResource("3_xnuki")
 
 [node name="Mail" parent="Grid" instance=ExtResource("5_wed38")]
+position = Vector2(450, 405)
+tile_pos = Vector2i(6, 2)
+
+[node name="Mailbox" parent="Grid" instance=ExtResource("6_4e4kd")]
 position = Vector2(540, 360)
 tile_pos = Vector2i(6, 1)
 
-[node name="Mailbox" parent="Grid" instance=ExtResource("6_4e4kd")]
-position = Vector2(630, 315)
-tile_pos = Vector2i(6, 0)
-
 [node name="Pug" parent="Grid" instance=ExtResource("8_omjnq")]
-position = Vector2(720, 450)
-tile_pos = Vector2i(8, 1)
+position = Vector2(630, 495)
+tile_pos = Vector2i(8, 2)
 
 [node name="Player" parent="Grid" instance=ExtResource("4_baiij")]
-position = Vector2(360, 451)
-tile_pos = Vector2i(6, 3)
+position = Vector2(270, 495)
+tile_pos = Vector2i(6, 4)
 
 [node name="HUD" parent="." instance=ExtResource("9_mmmtr")]
