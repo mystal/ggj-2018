@@ -26,6 +26,7 @@ Utils="*res://globals/utils.gd"
 window/size/viewport_width=1024
 window/size/viewport_height=768
 window/size/resizable=false
+window/stretch/mode="canvas_items"
 
 [global_group]
 

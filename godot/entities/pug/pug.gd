@@ -43,8 +43,28 @@ func step() -> void:
 	if not is_inspecting:
 		return
 
-	# TODO: Take a step towards inspection position.
-	# TODO: Once reached, go back to Guarding.
+	# Take a step towards inspection position. Update facing.
+	var grid: GroundTiles = %GroundTiles
+	var path := grid.get_tile_path(tile_pos, inspect_pos)
+	if not path.is_empty():
+		var next_pos := path[1]
+		var diff := next_pos - tile_pos
+		match diff:
+			Vector2i.UP:
+				facing = Enums.Direction.NORTH
+			Vector2i.DOWN:
+				facing = Enums.Direction.SOUTH
+			Vector2i.LEFT:
+				facing = Enums.Direction.WEST
+			Vector2i.RIGHT:
+				facing = Enums.Direction.EAST
+		tile_pos = next_pos
+
+	# Once reached, go back to Guarding.
+	if tile_pos == inspect_pos:
+		state = State.Guarding
+		$QuestionMarkSprite.visible = false
+		inspect_pos = Vector2i.ZERO
 
 func died() -> void:
 	if is_dead:
@@ -55,6 +75,7 @@ func died() -> void:
 	$ShadowSprite.visible = false
 	$PugSprite.flip_v = true
 	z_index = 15
+	$QuestionMarkSprite.visible = false
 	state = State.Dead
 
 	# Despawn after a timeout
