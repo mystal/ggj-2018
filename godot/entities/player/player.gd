@@ -38,13 +38,13 @@ func _process(delta: float) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	var dir := Vector2i.ZERO
-	if event.is_action_pressed("ui_left"):
+	if event.is_action_pressed("move_left"):
 		dir = Vector2i.LEFT
-	elif event.is_action_pressed("ui_right"):
+	elif event.is_action_pressed("move_right"):
 		dir = Vector2i.RIGHT
-	elif event.is_action_pressed("ui_up"):
+	elif event.is_action_pressed("move_up"):
 		dir = Vector2i.UP
-	elif event.is_action_pressed("ui_down"):
+	elif event.is_action_pressed("move_down"):
 		dir = Vector2i.DOWN
 
 	if dir == Vector2i.ZERO:
