@@ -1,12 +1,10 @@
 # SNEKY FOX
 
-NOTE: This is a branch to port the game to Godot. Very WIP!
-
 Deliver Mail, Avoid Pugs!
 
 ## Instructions
 
-Arrow keys to move.
+Arrow keys or WASD to move.
 
 Pugs will attack when you move directly into their path.
 
